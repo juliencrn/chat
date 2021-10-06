@@ -1,23 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { FormEvent, useState } from 'react';
+
 import './App.css';
+import Chat from './Chat';
 
 function App() {
+  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
+  
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!username) {
+      return alert("Name can't be empty");
+    }
+    setUserId(username);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {!userId ? (
+          <div>
+            <h2>Hello!</h2>
+
+            <form onSubmit={handleSubmit}>
+              <input
+                id="name"
+                onChange={e => setUsername(e.target.value.trim())}
+                required
+                placeholder="What is your name .."
+                value={username}
+              />
+              <br />
+
+              <button type="submit">Submit</button>
+            </form>
+          </div>
+        ) : (
+          <Chat username={username} />
+        )}
       </header>
     </div>
   );
