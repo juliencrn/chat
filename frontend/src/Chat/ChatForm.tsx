@@ -23,16 +23,14 @@ function ChatForm({ onMessage }: ChatFormProps) {
     }
 
     return (
-        <form onSubmit={sendMessage}>
+        <form onSubmit={sendMessage} className="flex p-3">
             <input
+                className="flex-1 shadow-sm py-2 px-4 rounded-md border border-gray-300 focus:border-gray-400 resize-none outline-none"
+                placeholder="Message..."
                 onChange={handleUpdate}
-                required
-                placeholder="Say hi!"
+                autoFocus
                 value={input}
             />
-            <br />
-
-            <button type="submit">Send</button>
         </form>
     )
 }
