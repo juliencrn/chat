@@ -12,6 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
 
 @WebSocketGateway({
+  // TODO: Use environnement variable instead
   cors: { origin: 'http://localhost:3000' },
 })
 export class ChatGateway
