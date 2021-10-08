@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ExtractJwt } from 'passport-jwt';
 import { jwtConstants } from '../auth.contants';
-import { PublicUser } from 'src/users/schemas/user.schema';
+import { UserPublic } from 'src/users/schemas/user.schema';
 import { JwtPayload } from '../auth.service';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<PublicUser> {
+  async validate(payload: JwtPayload): Promise<UserPublic> {
     const { id, username, createdAt } = payload;
-    return { id, username, createdAt } as PublicUser;
+    return { id, username, createdAt } as UserPublic;
   }
 }

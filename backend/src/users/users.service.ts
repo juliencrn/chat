@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PublicUser, User, UserDocument } from './schemas/user.schema';
+import { UserPublic, User, UserDocument } from './schemas/user.schema';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -22,7 +22,7 @@ export class UsersService {
     return await this.userModel.findOne({ username }).exec();
   }
 
-  toPublic(user: UserDocument): PublicUser {
+  toPublic(user: UserDocument): UserPublic {
     const { _id, username, createdAt } = user;
     return { id: _id, username, createdAt };
   }

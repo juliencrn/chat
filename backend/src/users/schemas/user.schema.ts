@@ -17,6 +17,6 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-export interface PublicUser extends Omit<User, 'password'> {
+export interface UserPublic extends Omit<User, 'password'> {
   id: string;
 }

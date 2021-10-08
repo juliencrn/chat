@@ -3,10 +3,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { PublicUser, UserDocument } from 'src/users/schemas/user.schema';
+import { UserPublic, UserDocument } from 'src/users/schemas/user.schema';
 
-export type AccessToken = { accessToken: string; user: PublicUser };
-export type JwtPayload = PublicUser;
+export type AccessToken = { accessToken: string; user: UserPublic };
+export type JwtPayload = UserPublic;
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
   async validateUser(
     username: string,
     pass: string,
-  ): Promise<PublicUser | null> {
+  ): Promise<UserPublic | null> {
     const user = await this.usersService.findOne(username);
     if (!user) {
       return null;
@@ -30,7 +30,7 @@ export class AuthService {
     return this.usersService.toPublic(user as UserDocument);
   }
 
-  async login(user: PublicUser): Promise<AccessToken> {
+  async login(user: UserPublic): Promise<AccessToken> {
     const payload: JwtPayload = user;
     const accessToken = this.jwtService.sign(payload);
     return { accessToken, user };
