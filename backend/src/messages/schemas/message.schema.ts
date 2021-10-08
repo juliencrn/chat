@@ -16,3 +16,7 @@ export class Message {
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
+
+export interface MessagePublic extends Message {
+  id: string;
+}
