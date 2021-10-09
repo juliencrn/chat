@@ -6,12 +6,18 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  SerializeOptions,
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongooseClassSerializer.interceptor';
+import { Message } from './schemas/message.schema';
 
 @Controller('messages')
+@SerializeOptions({ excludePrefixes: ['_'] })
+@UseInterceptors(MongooseClassSerializerInterceptor(Message))
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 

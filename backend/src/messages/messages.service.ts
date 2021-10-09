@@ -5,58 +5,71 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
-import {
-  Message,
-  MessageDocument,
-  MessagePublic,
-} from './schemas/message.schema';
+import { Message, MessageDocument } from './schemas/message.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class MessagesService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    private readonly usersService: UsersService,
   ) {}
 
-  async create(createMessageDto: CreateMessageDto): Promise<MessagePublic> {
-    this.validateDTO(createMessageDto);
-    const createdCat = new this.messageModel(createMessageDto);
+  async create(createMessageDto: CreateMessageDto): Promise<Message> {
+    let user: User;
+    try {
+      user = await this.usersService.findById(createMessageDto.userId);
+    } catch (error) {
+      throw new BadRequestException('Could not find user provided as userId');
+    }
+    if (!user) {
+      throw new BadRequestException('Could not find user provided as userId');
+    }
+
+    const createdCat = new this.messageModel({
+      text: createMessageDto.text,
+      user,
+    });
     const message = await createdCat.save();
-    return this.toPublic(message);
+    return message;
   }
 
-  async findAll(): Promise<MessagePublic[]> {
-    const messages = await this.messageModel.find().exec();
-    if (!messages || messages.length < 1) {
+  async findAll(): Promise<Message[]> {
+    const messages = await this.messageModel.find().populate('user').exec();
+    if (!messages) {
       return [];
     }
-    return messages.map((message) => this.toPublic(message));
+    return messages;
   }
 
-  async findOne(id: string): Promise<MessagePublic> {
+  async findOne(id: string): Promise<Message> {
     this.validateObjectId(id);
-    let message: MessageDocument;
+    let message: Message;
     try {
-      message = await this.messageModel.findById(id).exec();
+      message = await this.messageModel.findById(id).populate('user').exec();
     } catch (error) {
       throw new NotFoundException('Could not find message');
     }
     if (!message) {
       throw new NotFoundException('Could not find message');
     }
-    return this.toPublic(message);
+    return message;
   }
 
   async update(
     id: string,
     updateMessageDto: UpdateMessageDto,
-  ): Promise<MessagePublic> {
+  ): Promise<Message> {
     this.validateObjectId(id);
+    const { text } = updateMessageDto;
     const message = await this.messageModel
-      .findByIdAndUpdate(id, { $set: { ...updateMessageDto } }, { new: true })
+      .findByIdAndUpdate(id, { $set: { text } }, { new: true })
+      .populate('user')
       .exec();
-    return this.toPublic(message);
+    return message;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -72,16 +85,5 @@ export class MessagesService {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('Invalid id');
     }
-  }
-
-  private validateDTO(dto: CreateMessageDto | UpdateMessageDto) {
-    if (dto['_id']) {
-      throw new BadRequestException("You can't override the id (_id)");
-    }
-  }
-
-  private toPublic(message: MessageDocument): MessagePublic {
-    const { _id: id, userId, text, createdAt } = message;
-    return { id, userId, text, createdAt };
   }
 }

@@ -3,10 +3,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserPublic, UserDocument } from 'src/users/schemas/user.schema';
+import { User } from 'src/users/schemas/user.schema';
 
-export type AccessToken = { accessToken: string; user: UserPublic };
-export type JwtPayload = UserPublic;
+export type UserRequestBody = Pick<User, 'id' | 'username'>;
+export type AccessToken = {
+  accessToken: string;
+  user: UserRequestBody;
+};
+export type JwtPayload = { sub: string; username: string };
 
 @Injectable()
 export class AuthService {
@@ -15,11 +19,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(
-    username: string,
-    pass: string,
-  ): Promise<UserPublic | null> {
-    const user = await this.usersService.findOne(username);
+  async validateUser(username: string, pass: string): Promise<User | null> {
+    let user;
+    try {
+      user = await this.usersService.findByUsername(username);
+    } catch (error) {}
+
     if (!user) {
       return null;
     }
@@ -27,27 +32,26 @@ export class AuthService {
     if (!match) {
       return null;
     }
-    return this.usersService.toPublic(user as UserDocument);
+    return user;
   }
 
-  async login(user: UserPublic): Promise<AccessToken> {
-    const payload: JwtPayload = user;
+  async login({ id, username }: User): Promise<AccessToken> {
+    const payload: JwtPayload = { sub: id, username };
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken, user };
+    return { accessToken, user: { id, username } };
   }
 
   async register(createUserDto: CreateUserDto): Promise<AccessToken> {
     // Check if the username is available
     const { username } = createUserDto;
-    const existingUser = await this.usersService.findOne(username);
+    const existingUser = await this.usersService.findByUsername(username);
     if (existingUser) {
       throw new BadRequestException('Username already taken');
     }
 
     const password = await this.hashPassword(createUserDto.password);
     const createdUser = await this.usersService.create({ username, password });
-    const user = this.usersService.toPublic(createdUser);
-    return await this.login(user);
+    return await this.login(createdUser);
   }
 
   async hashPassword(password: string): Promise<string> {

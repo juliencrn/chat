@@ -1,13 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserPublic, User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if the username is available
     const { username, password } = createUserDto;
     const existingUser = await this.userModel.findOne({ username }).exec();
@@ -18,12 +22,19 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findOne(username: string): Promise<UserDocument> {
+  async findById(id: string): Promise<User> {
+    return await this.userModel.findById(id).exec();
+  }
+
+  async findByUsername(username: string): Promise<User> {
     return await this.userModel.findOne({ username }).exec();
   }
 
-  toPublic(user: UserDocument): UserPublic {
-    const { _id, username, createdAt } = user;
-    return { id: _id, username, createdAt };
+  async findAll(): Promise<User[]> {
+    const users = await this.userModel.find().exec();
+    if (!users) {
+      return [];
+    }
+    return users;
   }
 }
