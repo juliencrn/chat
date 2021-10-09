@@ -1,7 +1,9 @@
 import {
   Controller,
   Get,
+  NotFoundException,
   Param,
+  Req,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,8 +22,22 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('profile')
+  async profile(@Req() req: any) {
+    return await this.findOne(req.user.id);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findById(id);
+  async findOne(@Param('id') id: string) {
+    let user;
+    try {
+      user = await this.usersService.findById(id);
+    } catch (error) {
+      throw new NotFoundException('Could not find user');
+    }
+    if (!user) {
+      throw new NotFoundException('Could not find user');
+    }
+    return user;
   }
 }
