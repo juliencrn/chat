@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector } from "react-redux";
 
-import Chat from './Chat/Chat';
-import Login from './Login/Login';
+import Chat from './screens/Chat';
+import Login from './screens/Login';
+import { RootState } from './state/store';
 
 function App() {
-  const [username, setUsername] = useState("");
+  const { user } = useSelector((state: RootState) => state.auth)
 
-  const logout = () => setUsername("")
+  // TODO: Use a router instead
+  if (!user) {
+    return <Login />
+  } 
 
-  return !!username
-    ? <Chat username={username} onLogout={logout} />
-    : <Login onSuccess={setUsername} />
+  return <Chat />
 }
 
 export default App;

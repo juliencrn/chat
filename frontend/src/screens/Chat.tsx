@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import ChatForm from './ChatForm';
-import useSocket from '../useSocket';
-import { ChevronLeftIcon, ChevronRightIcon, LogoutIcon } from '../Icons';
+import { useSelector, useDispatch } from "react-redux";
+
+import ChatForm from '../components/ChatForm';
+import useSocket from '../hooks/useSocket';
+import { ChevronLeftIcon, ChevronRightIcon, LogoutIcon } from '../components/Icons';
+import { RootState } from '../state/store';
+import { logout } from '../state/authSlice';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT ?? ""
 
@@ -17,12 +21,12 @@ interface Message {
   postedAt: number
 }
 
-const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MTYwZDc1ZGMzMWZiNDAyNTNlYmYyZDMiLCJ1c2VybmFtZSI6Imp1bGllbiIsImlhdCI6MTYzMzc0MzkxMywiZXhwIjoxNjM2MzM1OTEzfQ._xS_U7AmH6AlPvSSFJi1U-90fkplelxbe5TicmdMElI"
-
-function Chat({ username, onLogout }: ChatProps) {
+function Chat() {
+  const { user, accessToken } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch()
   const socket = useSocket(apiEndpoint, {
     query: {
-      access_token,
+      access_token: accessToken || "",
     },
     // use WebSocket first, if available
     transports: ["websocket", "polling"] 
@@ -36,14 +40,6 @@ function Chat({ username, onLogout }: ChatProps) {
     { id: "5b209b67-6eab-4bb1-9243-4658308dc884", postedAt: 1633571742877, text: "Salut Ju", username: "Luc" },
     { id: "c9b24208-782e-4877-9f74-66513a648570", postedAt: 1633571736480, text: "Hey?", username: "Julien" },
   ])
-
-  const handleMessage = (text: string) => {
-    console.log("Emit message", { text, username });
-    socket.emit("message", username, text)
-  }
-
-  const openSidebar = () => setShowSidebar(true)
-  const closeSidebar = () => setShowSidebar(false)
 
   useEffect(() => {
     if (socket === null) {
@@ -70,6 +66,21 @@ function Chat({ username, onLogout }: ChatProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  if (!user || !accessToken) {
+    // TODO: Redirect
+    dispatch(logout())
+    return null
+  }
+
+  const handleMessage = (text: string) => {
+    console.log("Emit message", { text, user: user.username });
+    socket.emit("message", user.username, text)
+  }
+
+  const openSidebar = () => setShowSidebar(true)
+  const closeSidebar = () => setShowSidebar(false)
+  const handleLogout = () => dispatch(logout())
+
   return (
     <div className="flex-1 flex">
       <aside className={`bg-gray-800 text-white ${showSidebar ? "w-60" : "w-15"}`}>
@@ -94,7 +105,7 @@ function Chat({ username, onLogout }: ChatProps) {
       <div className="flex-1 flex flex-col">
         <header className="flex justify-between items-center shadow-md bg-gray-100 py-3 px-3">
           <div className="text-write font-bold text-lg tracking-wide">Chat</div>
-          <button onClick={onLogout}><LogoutIcon /></button>
+          <button onClick={handleLogout}><LogoutIcon /></button>
         </header>
 
         <div className="flex-1">

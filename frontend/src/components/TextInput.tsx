@@ -1,15 +1,17 @@
-import React, { forwardRef, HTMLProps } from 'react'
+import React, { ChangeEventHandler, forwardRef, HTMLProps } from 'react'
 
 export interface TextInputProps {
     name: string
+    onChange: ChangeEventHandler
+    onBlur: ChangeEventHandler
     label: string
     inputProps: HTMLProps<HTMLInputElement>
     errors?: any
 }
 
-export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     function TextInput(props, ref) {
-        const { name, label, inputProps, errors} = props
+        const { name, label, inputProps, errors, onBlur, onChange} = props
         return (
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={name}>
@@ -19,8 +21,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                 ref={ref}
                 type="text" 
                 {...inputProps}
-                id={name}
-                name={name}
+                {...{ onBlur, onChange, id: name, name}}
                 className={`shadow appearance-none border ${errors ? "border-red-500" : ""} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`} 
               />
               {errors && (
@@ -32,3 +33,5 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         )
     }
 )
+
+export default TextInput
