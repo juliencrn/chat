@@ -17,8 +17,16 @@ interface Message {
   postedAt: number
 }
 
+const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MTYwZDc1ZGMzMWZiNDAyNTNlYmYyZDMiLCJ1c2VybmFtZSI6Imp1bGllbiIsImlhdCI6MTYzMzc0MzkxMywiZXhwIjoxNjM2MzM1OTEzfQ._xS_U7AmH6AlPvSSFJi1U-90fkplelxbe5TicmdMElI"
+
 function Chat({ username, onLogout }: ChatProps) {
-  const socket = useSocket(apiEndpoint)
+  const socket = useSocket(apiEndpoint, {
+    query: {
+      access_token,
+    },
+    // use WebSocket first, if available
+    transports: ["websocket", "polling"] 
+  })
   const [showSidebar, setShowSidebar] = useState(true)
 
   const [messages, setMessages] = useState<Message[]>([
