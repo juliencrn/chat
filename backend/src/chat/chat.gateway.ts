@@ -7,10 +7,12 @@ import {
   MessageBody,
   OnGatewayInit,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
+import { WebSocketJwtAuthGuard } from 'src/auth/guards/websocket-jwt-auth.guard';
 
+@UseGuards(WebSocketJwtAuthGuard)
 @WebSocketGateway({
   // TODO: Use environnement variable instead
   cors: { origin: 'http://localhost:3000' },
