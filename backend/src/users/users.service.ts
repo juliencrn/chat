@@ -1,9 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { classToPlain, plainToClass } from 'class-transformer';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
@@ -11,7 +8,7 @@ import { User, UserDocument } from './schemas/user.schema';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     // Check if the username is available
     const { username, password } = createUserDto;
     const existingUser = await this.userModel.findOne({ username }).exec();
@@ -22,19 +19,23 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<UserDocument> {
     return await this.userModel.findById(id).exec();
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<UserDocument> {
     return await this.userModel.findOne({ username }).exec();
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDocument[]> {
     const users = await this.userModel.find().exec();
     if (!users) {
       return [];
     }
     return users;
+  }
+
+  serialize(doc: UserDocument): Record<string, any> {
+    return classToPlain(plainToClass(User, doc.toObject()));
   }
 }

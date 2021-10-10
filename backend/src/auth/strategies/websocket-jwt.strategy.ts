@@ -12,14 +12,14 @@ export class WebSocketJwtStrategy extends PassportStrategy(
 ) {
   constructor(private readonly usersService: UsersService) {
     super({
-      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('access_token'),
+      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('accessToken'),
       ignoreExpiration: false,
       secretOrKey: jwtConstants.secret,
     });
   }
 
   async validate(payload: JwtPayload): Promise<boolean> {
-    const user = this.usersService.findById(payload.sub);
+    const user = await this.usersService.findById(payload.sub);
     return !!user;
   }
 }

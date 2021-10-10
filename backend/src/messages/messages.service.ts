@@ -9,7 +9,8 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/schemas/user.schema';
+import { UserDocument } from 'src/users/schemas/user.schema';
+import { classToPlain, plainToClass } from 'class-transformer';
 
 @Injectable()
 export class MessagesService {
@@ -18,8 +19,8 @@ export class MessagesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createMessageDto: CreateMessageDto): Promise<Message> {
-    let user: User;
+  async create(createMessageDto: CreateMessageDto): Promise<MessageDocument> {
+    let user: UserDocument;
     try {
       user = await this.usersService.findById(createMessageDto.userId);
     } catch (error) {
@@ -33,11 +34,12 @@ export class MessagesService {
       text: createMessageDto.text,
       user,
     });
+
     const message = await createdCat.save();
     return message;
   }
 
-  async findAll(): Promise<Message[]> {
+  async findAll(): Promise<MessageDocument[]> {
     const messages = await this.messageModel.find().populate('user').exec();
     if (!messages) {
       return [];
@@ -45,9 +47,9 @@ export class MessagesService {
     return messages;
   }
 
-  async findOne(id: string): Promise<Message> {
+  async findOne(id: string): Promise<MessageDocument> {
     this.validateObjectId(id);
-    let message: Message;
+    let message: MessageDocument;
     try {
       message = await this.messageModel.findById(id).populate('user').exec();
     } catch (error) {
@@ -62,7 +64,7 @@ export class MessagesService {
   async update(
     id: string,
     updateMessageDto: UpdateMessageDto,
-  ): Promise<Message> {
+  ): Promise<MessageDocument> {
     this.validateObjectId(id);
     const { text } = updateMessageDto;
     const message = await this.messageModel
@@ -85,5 +87,9 @@ export class MessagesService {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('Invalid id');
     }
+  }
+
+  serialize(doc: MessageDocument): Record<string, any> {
+    return classToPlain(plainToClass(Message, doc.toObject()));
   }
 }

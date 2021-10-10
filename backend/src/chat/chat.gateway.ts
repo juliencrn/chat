@@ -7,10 +7,23 @@ import {
   MessageBody,
   OnGatewayInit,
 } from '@nestjs/websockets';
-import { Logger, UseGuards } from '@nestjs/common';
+import {
+  Logger,
+  SerializeOptions,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { randomUUID } from 'crypto';
 import { WebSocketJwtAuthGuard } from 'src/auth/guards/websocket-jwt-auth.guard';
+import { MessagesService } from 'src/messages/messages.service';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongooseClassSerializer.interceptor';
+import { User } from 'src/users/schemas/user.schema';
+import { UsersService } from 'src/users/users.service';
+
+enum EventNames {
+  user_count = 'user_count',
+  message = 'message',
+}
 
 @UseGuards(WebSocketJwtAuthGuard)
 @WebSocketGateway({
@@ -27,33 +40,53 @@ export class ChatGateway
 
   private logger: Logger = new Logger('ChatGateway');
 
+  constructor(
+    private readonly messagesService: MessagesService,
+    private readonly usersService: UsersService,
+  ) {}
+
   async afterInit(/*server: Server*/) {
     this.logger.log('Init');
   }
 
   async handleConnection(client: Socket) {
     this.logger.log(`Client connected ${client.id}`);
+    // console.log('handshake', client.handshake);
     this.userCount++;
-    this.server.emit('user_count', this.userCount);
+    this.server.emit(EventNames.user_count, this.userCount);
   }
 
   async handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected ${client.id}`);
     this.userCount--;
-    this.server.emit('user_count', this.userCount);
+    this.server.emit(EventNames.user_count, this.userCount);
   }
 
-  @SubscribeMessage('message')
-  async onChat(@MessageBody() [username, text]: [string, string]) {
-    // TODO: Replace by a Model
-    const chatMessage = {
-      id: randomUUID(),
-      postedAt: Date.now(),
-      username,
-      text,
-    };
+  @SubscribeMessage(EventNames.message)
+  async onChat(@MessageBody() [userId, text]: [string, string]) {
+    const chatMessage = await this.messagesService.create({ userId, text });
+    const serializedMessage = this.messagesService.serialize(chatMessage);
 
-    this.logger.log(`Message received "${text}"`, chatMessage);
-    this.server.emit('message', chatMessage);
+    this.logger.log(`Message received "${text}"`);
+    this.server.emit(EventNames.message, excludePrefix(serializedMessage));
   }
+}
+
+// TODO: It's not the Nest way
+function excludePrefix(
+  obj: Record<string, any>,
+  prefix?: string,
+): Record<string, any> {
+  for (const key in obj) {
+    if (key.slice(0, 1) === prefix ?? '_') {
+      delete obj[key];
+    }
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const element = obj[key];
+      if (typeof element === 'object') {
+        obj[key] = excludePrefix(element);
+      }
+    }
+  }
+  return obj;
 }
