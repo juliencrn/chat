@@ -15,10 +15,12 @@ import {
 
 import authReducer from "./authSlice";
 import { authApi } from "./authApi";
+import { messagesApi } from './messagesApi'
 
 const rootReducer = combineReducers({
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
+    [messagesApi.reducerPath]: messagesApi.reducer,
 })
 
 const persistConfig: PersistConfig<RootState> = {
@@ -39,7 +41,8 @@ export const store = configureStore({
           },
     })
     .concat(
-        authApi.middleware
+        authApi.middleware,
+        messagesApi.middleware
     )
 })
 

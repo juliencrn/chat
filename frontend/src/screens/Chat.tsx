@@ -7,6 +7,7 @@ import { ChevronLeftIcon, ChevronRightIcon, LogoutIcon } from '../components/Ico
 import { RootState } from '../state/store';
 import { logout } from '../state/authSlice';
 import { Message, User } from '../types';
+import { useGetAllMessagesQuery } from '../state/messagesApi';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT ?? ""
 
@@ -23,15 +24,22 @@ function Chat() {
 }
 
 function ChatWrapped({currentUser, accessToken}: { currentUser: User, accessToken: string }) {
+  const {data: initialMessages, isSuccess} = useGetAllMessagesQuery(undefined)
+  const [showSidebar, setShowSidebar] = useState(true)
+  const [messages, setMessages] = useState<Message[]>([])
   const dispatch = useDispatch()
   const socket = useSocket(apiEndpoint, {
     query: { accessToken, userId: currentUser.id },
     // use WebSocket first, if available
     transports: ["websocket", "polling"] 
   })
-  const [showSidebar, setShowSidebar] = useState(true)
+  
 
-  const [messages, setMessages] = useState<Message[]>([])
+  useEffect(() => {
+    if (isSuccess && messages.length === 0) {
+      setMessages(initialMessages as Message[])
+    }
+  }, [initialMessages, isSuccess, messages])
 
   useEffect(() => {
     if (socket === null) {
@@ -91,13 +99,16 @@ function ChatWrapped({currentUser, accessToken}: { currentUser: User, accessToke
       <div className="flex-1 flex flex-col">
         <header className="flex justify-between items-center shadow-md bg-gray-100 py-3 px-3">
           <div className="text-write font-bold text-lg tracking-wide">Chat</div>
-          <button onClick={handleLogout}><LogoutIcon /></button>
+          <div className="flex">
+            <p className="mr-4 text-sm">Connected as: {currentUser.username}</p>
+            <button onClick={handleLogout}><LogoutIcon /></button>
+          </div>
         </header>
 
         <div className="flex-1">
           <ul className="flex flex-col pt-4 overflow-y-auto scrollbar-w-2 scrolling-touch">
             {messages.map(({ id, user, text, createdAt }, i, array) => {
-              const isPrevAuthorEqual = i > 0 && array[i - 1].user.id === currentUser.id
+              const isPrevAuthorEqual = i > 0 && array[i - 1].user.id === user.id
               if (isPrevAuthorEqual) {
                 return (
                   <li key={id} className="flex justify-items-start px-3">
