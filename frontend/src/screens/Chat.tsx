@@ -8,6 +8,7 @@ import { RootState } from '../state/store';
 import { logout } from '../state/authSlice';
 import { Message, User } from '../types';
 import { useGetAllMessagesQuery } from '../state/messagesApi';
+import ChatMessage from '../components/ChatMessage';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT ?? ""
 
@@ -107,34 +108,9 @@ function ChatWrapped({currentUser, accessToken}: { currentUser: User, accessToke
 
         <div className="flex-1">
           <ul className="flex flex-col pt-4 overflow-y-auto scrollbar-w-2 scrolling-touch">
-            {messages.map(({ id, user, text, createdAt }, i, array) => {
-              const isPrevAuthorEqual = i > 0 && array[i - 1].user.id === user.id
-              if (isPrevAuthorEqual) {
-                return (
-                  <li key={id} className="flex justify-items-start px-3">
-                   <div className="w-10"></div>
-                    <p className="flex-1 pl-3 text-sm">
-                      {text}
-                    </p>
-                  </li>
-                )
-              } else {
-                return (
-                  <li key={id} className="flex justify-items-start px-3 mt-3">
-                    <div className="w-10 h-10 bg-purple-300 rounded-md flex">
-                      <span className="m-auto text-lg uppercase bold">{user.username.slice(0, 1)}</span>
-                    </div>
-                    <div className="flex-1 pl-3 flex flex-col text-sm">
-                      <p>
-                        <b>{user.username}</b>
-                        <small className="text-gray-500 pl-1">{new Date(createdAt).toLocaleString()}</small>
-                      </p>
-                      <p>{text}</p>
-                    </div>
-                  </li>
-                )
-              }
-            })}
+            {messages.map((message, i, array) => (
+              <ChatMessage key={message.id} message={message} prev={array[i - 1]} />
+            ))}
           </ul>
         </div>
 
