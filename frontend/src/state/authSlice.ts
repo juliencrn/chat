@@ -2,13 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { User } from '../types'
 
 export interface AuthState {
-  accessToken: string | null
-  user: null | User
+  accessToken: string
+  user: User
 }
 
-const initialState: AuthState = {
-  accessToken: null,
-  user: null,
+const initialState: Partial<AuthState> = {
+  accessToken: undefined,
+  user: undefined,
 }
 
 export const authSlice = createSlice({

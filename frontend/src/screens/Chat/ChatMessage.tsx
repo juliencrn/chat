@@ -1,5 +1,5 @@
 import React from 'react'
-import { Message } from '../types';
+import { Message } from '../../types';
 
 export interface ChatMessageProps {
     message: Message

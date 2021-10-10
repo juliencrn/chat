@@ -1,54 +1,53 @@
 import React from 'react';
-import { useSelector } from "react-redux";
 import {
   BrowserRouter,
   Switch,
   Route,
   Redirect,
-  RouteProps
+  RouteProps,
+  RouteComponentProps
 } from "react-router-dom";
+import useAuth from './hooks/useAuth';
 
-import Chat from './screens/Chat';
-import Login from './screens/Login';
-import { RootState } from './state/store';
+import Chat from './screens/Chat/Chat';
+import Login from './screens/Login/Login';
+import { AuthState } from './state/authSlice';
 
 function App() {
   return <AppRouter />
 }
 
+export default App;
+
 function AppRouter() {
   return (
     <BrowserRouter>
       <Switch>
-        <PublicOnlyRoute path="/login">
-          <Login />
-        </PublicOnlyRoute>
-        <PrivateRoute path="/">
-          <Chat />
-        </PrivateRoute>
+        <PrivateRoute path="/" exact component={Chat} />
+        <PublicOnlyRoute path="/login" component={Login} />
       </Switch>
     </BrowserRouter>
   );
 }
 
-export default App;
+export interface PrivateRouteProps extends RouteComponentProps, AuthState {}
 
-function useAuth(): boolean {
-  const auth = useSelector((state: RootState) => state.auth)
-  return !!auth.user && !!auth.accessToken
+interface CustomRouteProps<T = RouteComponentProps> extends RouteProps {
+  component:  (props: T) => React.ReactElement | null
 }
 
-function PrivateRoute({ children, ...props }: RouteProps) {
-  const isAuth = useAuth()
+function PrivateRoute({ component: Component, path, ...rest }: CustomRouteProps<PrivateRouteProps>) {
+  const auth = useAuth()
   return (
-    <Route 
-      {...props}
-      render={({ location }) => isAuth
-        ? children
+    <Route
+      path={path}
+      {...rest}
+      render={props => auth
+        ? <Component {...{...props, ...auth}} />
         : (
           <Redirect to={{
             pathname: "/login",
-            state: { from: location }
+            state: { from: props.location }
           }} />
         )
       }
@@ -56,17 +55,18 @@ function PrivateRoute({ children, ...props }: RouteProps) {
   )
 }
 
-function PublicOnlyRoute({ children, ...props }: RouteProps) {
-  const isAuth = useAuth()
+function PublicOnlyRoute({ component: Component, path, ...rest }: CustomRouteProps) {
+  const auth = useAuth()
   return (
     <Route 
-      {...props}
-      render={({ location }) => !isAuth
-        ? children
+      path={path}
+      {...rest}
+      render={props => !auth
+        ? <Component {...props} />
         : (
           <Redirect to={{
             pathname: "/",
-            state: { from: location }
+            state: { from: props.location }
           }} />
         )
       }
