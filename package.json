@@ -1,0 +1,21 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "lint": "lerna run lint",
+    "start": "npm run dev",
+    "dev": "concurrently --kill-others \"npm run dev:front\" \"npm run dev:back\"",
+    "dev:front": "lerna run --scope frontend start --stream",
+    "dev:back": "lerna run --scope backend start:dev --stream",
+    "test": "lerna run test"
+  },
+  "workspaces": [
+    "./backend",
+    "./frontend"
+  ],
+  "devDependencies": {
+    "concurrently": "^6.3.0",
+    "lerna": "^4.0.0"
+  }
+}
