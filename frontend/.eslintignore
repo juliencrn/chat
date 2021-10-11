@@ -1,0 +1,30 @@
+node_modules
+package-lock.json
+
+# Cache
+.npm
+.cache
+.eslintcache
+
+# ignore built packages
+lib
+dist
+esm
+public
+generated
+*.min.js
+
+# Coverage
+coverage
+
+# Output of 'npm pack'
+*.tgz
+
+# Mac files
+.DS_Store
+
+# Logs
+logs
+*.log
+
+*.hbs
