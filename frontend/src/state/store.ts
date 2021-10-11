@@ -15,12 +15,16 @@ import storage from "redux-persist/lib/storage";
 
 import { authApi } from "./authApi";
 import authReducer from "./authSlice";
+import chatReducer from "./chatSlice";
 import { messagesApi } from "./messagesApi";
+import { usersApi } from "./usersApi";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  chat: chatReducer,
   [authApi.reducerPath]: authApi.reducer,
   [messagesApi.reducerPath]: messagesApi.reducer,
+  [usersApi.reducerPath]: usersApi.reducer,
 });
 
 const persistConfig: PersistConfig<RootState> = {
@@ -39,7 +43,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(authApi.middleware, messagesApi.middleware),
+    }).concat(authApi.middleware, messagesApi.middleware, usersApi.middleware),
 });
 
 export const persistor = persistStore(store);

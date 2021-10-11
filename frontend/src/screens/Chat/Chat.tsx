@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
 import { PrivateRouteProps } from "../../App";
 import useSocket from "../../hooks/useSocket";
+import {
+  addMessage,
+  setAllMessages,
+  updateConnections,
+} from "../../state/chatSlice";
 import { useGetAllMessagesQuery } from "../../state/messagesApi";
-import { Message, User } from "../../types";
+import { RootState } from "../../state/store";
+import { Message, User, UserConnection } from "../../types";
 import ChatForm from "./ChatForm";
 import ChatHeader from "./ChatHeader";
 import ChatMessageList from "./ChatMessageList";
@@ -27,11 +34,6 @@ function Chat({ accessToken, user }: PrivateRouteProps) {
 
 export default Chat;
 
-interface UserConnection {
-  userId: string;
-  connectionId: string;
-}
-
 function ChatApp({
   user: currentUser,
   socket,
@@ -41,12 +43,15 @@ function ChatApp({
 }) {
   const { data: initialMessages, isSuccess } =
     useGetAllMessagesQuery(undefined);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const thread = useSelector((state: RootState) => state.chat);
+  const { messages } = thread;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isSuccess && messages.length === 0) {
-      setMessages(initialMessages as Message[]);
+      dispatch(setAllMessages(initialMessages as Message[]));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessages, isSuccess, messages]);
 
   useEffect(() => {
@@ -56,24 +61,18 @@ function ChatApp({
     socket.on("exception", (data: any) => console.log("Exception", data));
 
     // Business events
-    socket.on("user", (user: UserConnection) => {
-      console.log("User", user);
-    });
-
-    socket.on("users", (users: UserConnection[]) => {
-      console.log("Users", users);
+    socket.on("users", (conns: UserConnection[]) => {
+      dispatch(updateConnections(conns));
     });
 
     socket.on("message", (message: Message) => {
-      console.log("Message", message);
-      setMessages(prev => [...prev, message]);
+      dispatch(addMessage(message));
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMessage = (text: string) => {
-    console.log("Emit message", { text, user: currentUser.id });
     socket.emit("message", currentUser.id, text);
   };
 
@@ -81,7 +80,7 @@ function ChatApp({
     <div className="flex-1 flex">
       <ChatSidebar />
       <div className="flex-1 flex flex-col">
-        <ChatHeader user={currentUser} />
+        <ChatHeader user={currentUser} thread={thread} />
         <ChatMessageList messages={messages} />
         <ChatForm onMessage={handleMessage} />
       </div>
