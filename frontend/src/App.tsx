@@ -1,20 +1,21 @@
-import React from 'react';
+import React from "react";
+
 import {
   BrowserRouter,
-  Switch,
-  Route,
   Redirect,
+  Route,
+  RouteComponentProps,
   RouteProps,
-  RouteComponentProps
+  Switch,
 } from "react-router-dom";
-import useAuth from './hooks/useAuth';
 
-import Chat from './screens/Chat/Chat';
-import Login from './screens/Login/Login';
-import { AuthState } from './state/authSlice';
+import useAuth from "./hooks/useAuth";
+import Chat from "./screens/Chat/Chat";
+import Login from "./screens/Login/Login";
+import { AuthState } from "./state/authSlice";
 
 function App() {
-  return <AppRouter />
+  return <AppRouter />;
 }
 
 export default App;
@@ -33,43 +34,57 @@ function AppRouter() {
 export interface PrivateRouteProps extends RouteComponentProps, AuthState {}
 
 interface CustomRouteProps<T = RouteComponentProps> extends RouteProps {
-  component:  (props: T) => React.ReactElement | null
+  component: (props: T) => React.ReactElement | null;
 }
 
-function PrivateRoute({ component: Component, path, ...rest }: CustomRouteProps<PrivateRouteProps>) {
-  const auth = useAuth()
+function PrivateRoute({
+  component: Component,
+  path,
+  ...rest
+}: CustomRouteProps<PrivateRouteProps>) {
+  const auth = useAuth();
   return (
     <Route
       path={path}
       {...rest}
-      render={props => auth
-        ? <Component {...{...props, ...auth}} />
-        : (
-          <Redirect to={{
-            pathname: "/login",
-            state: { from: props.location }
-          }} />
+      render={props =>
+        auth ? (
+          <Component {...{ ...props, ...auth }} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: props.location },
+            }}
+          />
         )
       }
     />
-  )
+  );
 }
 
-function PublicOnlyRoute({ component: Component, path, ...rest }: CustomRouteProps) {
-  const auth = useAuth()
+function PublicOnlyRoute({
+  component: Component,
+  path,
+  ...rest
+}: CustomRouteProps) {
+  const auth = useAuth();
   return (
-    <Route 
+    <Route
       path={path}
       {...rest}
-      render={props => !auth
-        ? <Component {...props} />
-        : (
-          <Redirect to={{
-            pathname: "/",
-            state: { from: props.location }
-          }} />
+      render={props =>
+        !auth ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: props.location },
+            }}
+          />
         )
       }
     />
-  )
+  );
 }

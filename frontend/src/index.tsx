@@ -1,11 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { PersistGate } from 'redux-persist/integration/react'
+import React from "react";
 
-import App from './App';
-import { store, persistor } from './state/store'
-import { Provider } from 'react-redux'
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { persistor, store } from "./state/store";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,7 +16,7 @@ ReactDOM.render(
       </PersistGate>
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root"),
 );
 
 // If you want to start measuring performance in your app, pass a function

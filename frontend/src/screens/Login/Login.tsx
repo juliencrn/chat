@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import LoginForm from './LoginForm';
-import PublicLayout from '../../components/PublicLayout';
+import PublicLayout from "../../components/PublicLayout";
+import LoginForm from "./LoginForm";
 
 function Login() {
   return (
