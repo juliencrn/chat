@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform, Type } from 'class-transformer';
-import { Document, Types } from 'mongoose';
-import { User } from 'src/users/schemas/user.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Expose, Transform, Type } from "class-transformer";
+import { Document, Types } from "mongoose";
+import { User } from "src/users/schemas/user.schema";
 
 export type MessageDocument = Message & Document;
 

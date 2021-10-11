@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Exclude, Expose, Transform } from "class-transformer";
+import { Document, Types } from "mongoose";
 
 export type UserDocument = User & Document;
 

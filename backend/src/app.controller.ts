@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Public } from './auth/auth.decorator';
+import { Controller, Get } from "@nestjs/common";
+
+import { AppService } from "./app.service";
+import { Public } from "./auth/auth.decorator";
 
 @Controller()
 export class AppController {
@@ -12,7 +13,7 @@ export class AppController {
   }
 
   @Public()
-  @Get('array')
+  @Get("array")
   findAll() {
     return [];
   }

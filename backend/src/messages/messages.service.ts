@@ -2,15 +2,16 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, isValidObjectId } from 'mongoose';
-import { Message, MessageDocument } from './schemas/message.schema';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
-import { UsersService } from 'src/users/users.service';
-import { UserDocument } from 'src/users/schemas/user.schema';
-import { classToPlain, plainToClass } from 'class-transformer';
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { classToPlain, plainToClass } from "class-transformer";
+import { isValidObjectId, Model } from "mongoose";
+import { UserDocument } from "src/users/schemas/user.schema";
+import { UsersService } from "src/users/users.service";
+
+import { CreateMessageDto } from "./dto/create-message.dto";
+import { UpdateMessageDto } from "./dto/update-message.dto";
+import { Message, MessageDocument } from "./schemas/message.schema";
 
 @Injectable()
 export class MessagesService {
@@ -24,10 +25,10 @@ export class MessagesService {
     try {
       user = await this.usersService.findById(createMessageDto.userId);
     } catch (error) {
-      throw new BadRequestException('Could not find user provided as userId');
+      throw new BadRequestException("Could not find user provided as userId");
     }
     if (!user) {
-      throw new BadRequestException('Could not find user provided as userId');
+      throw new BadRequestException("Could not find user provided as userId");
     }
 
     const createdCat = new this.messageModel({
@@ -40,7 +41,7 @@ export class MessagesService {
   }
 
   async findAll(): Promise<MessageDocument[]> {
-    const messages = await this.messageModel.find().populate('user').exec();
+    const messages = await this.messageModel.find().populate("user").exec();
     if (!messages) {
       return [];
     }
@@ -51,12 +52,12 @@ export class MessagesService {
     this.validateObjectId(id);
     let message: MessageDocument;
     try {
-      message = await this.messageModel.findById(id).populate('user').exec();
+      message = await this.messageModel.findById(id).populate("user").exec();
     } catch (error) {
-      throw new NotFoundException('Could not find message');
+      throw new NotFoundException("Could not find message");
     }
     if (!message) {
-      throw new NotFoundException('Could not find message');
+      throw new NotFoundException("Could not find message");
     }
     return message;
   }
@@ -69,7 +70,7 @@ export class MessagesService {
     const { text } = updateMessageDto;
     const message = await this.messageModel
       .findByIdAndUpdate(id, { $set: { text } }, { new: true })
-      .populate('user')
+      .populate("user")
       .exec();
     return message;
   }
@@ -85,7 +86,7 @@ export class MessagesService {
 
   private validateObjectId(id: string) {
     if (!isValidObjectId(id)) {
-      throw new BadRequestException('Invalid id');
+      throw new BadRequestException("Invalid id");
     }
   }
 

@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { classToPlain, plainToClass } from 'class-transformer';
-import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User, UserDocument } from './schemas/user.schema';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { classToPlain, plainToClass } from "class-transformer";
+import { Model } from "mongoose";
+
+import { CreateUserDto } from "./dto/create-user.dto";
+import { User, UserDocument } from "./schemas/user.schema";
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -13,7 +14,7 @@ export class UsersService {
     const { username, password } = createUserDto;
     const existingUser = await this.userModel.findOne({ username }).exec();
     if (existingUser) {
-      throw new BadRequestException('Chosen username is already taken');
+      throw new BadRequestException("Chosen username is already taken");
     }
     const createdUser = new this.userModel({ username, password });
     return createdUser.save();

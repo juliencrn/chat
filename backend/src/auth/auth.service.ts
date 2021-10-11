@@ -1,11 +1,11 @@
-import * as bcrypt from 'bcrypt';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/schemas/user.schema';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { User } from "src/users/schemas/user.schema";
+import { UsersService } from "src/users/users.service";
 
-export type UserRequestBody = Pick<User, 'id' | 'username'>;
+export type UserRequestBody = Pick<User, "id" | "username">;
 export type AccessToken = {
   accessToken: string;
   user: UserRequestBody;
@@ -46,7 +46,7 @@ export class AuthService {
     const { username } = createUserDto;
     const existingUser = await this.usersService.findByUsername(username);
     if (existingUser) {
-      throw new BadRequestException('Username already taken');
+      throw new BadRequestException("Username already taken");
     }
 
     const password = await this.hashPassword(createUserDto.password);

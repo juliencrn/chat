@@ -6,13 +6,14 @@ import {
   Req,
   SerializeOptions,
   UseInterceptors,
-} from '@nestjs/common';
-import MongooseClassSerializerInterceptor from 'src/interceptors/mongooseClassSerializer.interceptor';
-import { User } from './schemas/user.schema';
-import { UsersService } from './users.service';
+} from "@nestjs/common";
+import MongooseClassSerializerInterceptor from "src/interceptors/mongooseClassSerializer.interceptor";
 
-@Controller('users')
-@SerializeOptions({ excludePrefixes: ['_'] })
+import { User } from "./schemas/user.schema";
+import { UsersService } from "./users.service";
+
+@Controller("users")
+@SerializeOptions({ excludePrefixes: ["_"] })
 @UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -22,21 +23,21 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('profile')
+  @Get("profile")
   async profile(@Req() req: any) {
     return await this.findOne(req.user.id);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Get(":id")
+  async findOne(@Param("id") id: string) {
     let user;
     try {
       user = await this.usersService.findById(id);
     } catch (error) {
-      throw new NotFoundException('Could not find user');
+      throw new NotFoundException("Could not find user");
     }
     if (!user) {
-      throw new NotFoundException('Could not find user');
+      throw new NotFoundException("Could not find user");
     }
     return user;
   }
