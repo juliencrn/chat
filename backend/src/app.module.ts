@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { ChatModule } from "./chat/chat.module";
 import { MessagesModule } from "./messages/messages.module";
+import { ThreadsModule } from "./threads/threads.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -18,6 +19,7 @@ import { UsersModule } from "./users/users.module";
     MongooseModule.forRoot("mongodb://127.0.0.1:27017/chat"),
     AuthModule,
     UsersModule,
+    ThreadsModule,
   ],
   controllers: [AppController],
   providers: [
