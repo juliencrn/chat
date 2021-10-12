@@ -6,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   SerializeOptions,
   UseInterceptors,
 } from "@nestjs/common";
+import { Request } from "express";
 import MongooseClassSerializerInterceptor from "src/interceptors/mongooseClassSerializer.interceptor";
+import { User } from "src/users/schemas/user.schema";
 
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { UpdateThreadDto } from "./dto/update-thread.dto";
@@ -23,8 +26,9 @@ export class ThreadsController {
   constructor(private readonly threadsService: ThreadsService) {}
 
   @Post()
-  create(@Body() createThreadDto: CreateThreadDto) {
-    return this.threadsService.create(createThreadDto);
+  create(@Body() createThreadDto: CreateThreadDto, @Req() req: Request) {
+    const { id: ownerId } = req.user as Partial<User>;
+    return this.threadsService.create(createThreadDto, ownerId);
   }
 
   @Get()
@@ -38,12 +42,18 @@ export class ThreadsController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateThreadDto: UpdateThreadDto) {
-    return this.threadsService.update(id, updateThreadDto);
+  update(
+    @Param("id") id: string,
+    @Req() req: Request,
+    @Body() updateThreadDto: UpdateThreadDto,
+  ) {
+    const { id: ownerId } = req.user as Partial<User>;
+    return this.threadsService.update(id, updateThreadDto, ownerId);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.threadsService.remove(id);
+  remove(@Param("id") id: string, @Req() req: Request) {
+    const { id: ownerId } = req.user as Partial<User>;
+    return this.threadsService.remove(id, ownerId);
   }
 }
