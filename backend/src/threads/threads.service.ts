@@ -63,6 +63,21 @@ export class ThreadsService {
     return thread;
   }
 
+  async findOneByName(name: string): Promise<ThreadDocument> {
+    let thread: ThreadDocument;
+    try {
+      thread = await this.findByName(name);
+    } catch (error) {
+      throw new NotFoundException("Could not find thread");
+    }
+
+    if (!thread) {
+      throw new NotFoundException("Could not find thread");
+    }
+
+    return thread;
+  }
+
   async update(
     id: string,
     updateThreadDto: UpdateThreadDto,
