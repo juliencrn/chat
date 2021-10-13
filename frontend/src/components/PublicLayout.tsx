@@ -1,7 +1,7 @@
 import React from "react";
 
 interface LayoutProps {
-  children: React.ReactChild;
+  children: React.ReactNode;
   title: string;
 }
 

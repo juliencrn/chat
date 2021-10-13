@@ -10,10 +10,10 @@ import {
 } from "react-router-dom";
 
 import useAuth from "./hooks/useAuth";
-import Chat from "./screens/Chat/Chat";
-import Login from "./screens/Login/Login";
-import NotFound from "./screens/NotFound";
-import Thread from "./screens/Thread/Thread";
+import Chat from "./pages/Chat/Chat";
+import Login from "./pages/Login/Login";
+import NotFound from "./pages/NotFound";
+import Thread from "./pages/Thread/Thread";
 import { AuthState } from "./state/authSlice";
 
 function App() {
