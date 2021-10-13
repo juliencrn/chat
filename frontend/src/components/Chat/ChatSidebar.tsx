@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "../../components/Icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "../Icons";
 import ThreadList from "./ThreadList";
 import UserList from "./UserList";
 

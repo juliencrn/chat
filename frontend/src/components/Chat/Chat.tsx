@@ -3,8 +3,6 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
-import { PrivateRouteProps } from "../../App";
-import useSocket from "../../hooks/useSocket";
 import {
   addMessage,
   setAllMessages,
@@ -12,35 +10,19 @@ import {
 } from "../../state/chatSlice";
 import { useGetAllMessagesQuery } from "../../state/messagesApi";
 import { RootState } from "../../state/store";
-import { Message, User, UserConnection } from "../../types";
+import { Message, Thread, User, UserConnection } from "../../types";
 import ChatForm from "./ChatForm";
 import ChatHeader from "./ChatHeader";
 import ChatMessageList from "./ChatMessageList";
 import ChatSidebar from "./ChatSidebar";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT ?? "";
-
-function Chat({ accessToken, user }: PrivateRouteProps) {
-  const socket = useSocket(apiEndpoint, {
-    query: { accessToken, userId: user.id },
-  });
-
-  if (!socket) {
-    return <div>Socket initializing or error</div>;
-  }
-
-  return <ChatApp {...{ user, socket }} />;
-}
-
-export default Chat;
-
-function ChatApp({
-  user: currentUser,
-  socket,
-}: {
+interface ChatProps {
   user: User;
   socket: Socket;
-}) {
+  thread: Thread;
+}
+
+function Chat({ user: currentUser, socket }: ChatProps) {
   const { data: initialMessages, isSuccess } =
     useGetAllMessagesQuery(undefined);
   const thread = useSelector((state: RootState) => state.chat);
@@ -87,3 +69,5 @@ function ChatApp({
     </div>
   );
 }
+
+export default Chat;

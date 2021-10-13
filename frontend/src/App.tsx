@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 
 import useAuth from "./hooks/useAuth";
-import Chat from "./pages/Chat/Chat";
+import Home from "./pages/Home";
 import Login from "./pages/Login/Login";
 import NotFound from "./pages/NotFound";
 import Thread from "./pages/Thread/Thread";
@@ -26,7 +26,7 @@ function AppRouter() {
   return (
     <BrowserRouter>
       <Switch>
-        <PrivateRoute path="/" exact component={Chat} />
+        <PrivateRoute path="/" exact component={Home} />
         <PublicOnlyRoute path="/login" component={Login} />
         <PrivateRoute path="/thread/:name" component={Thread} />
         <Route path="*">

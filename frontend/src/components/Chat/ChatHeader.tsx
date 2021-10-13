@@ -2,9 +2,9 @@ import React from "react";
 
 import { useDispatch } from "react-redux";
 
-import { LogoutIcon } from "../../components/Icons";
 import { logout } from "../../state/authSlice";
 import { LegacyThread, User } from "../../types";
+import { LogoutIcon } from "../Icons";
 
 interface ChatHeaderProps {
   user: User;
