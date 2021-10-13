@@ -12,7 +12,11 @@ export const threadsApi = createApi({
     getAllThreads: builder.query<AllThreadsResponse, undefined>({
       query: () => "",
     }),
+
+    getOneThread: builder.query<Thread, string>({
+      query: name => `/${name}`,
+    }),
   }),
 });
 
-export const { useGetAllThreadsQuery } = threadsApi;
+export const { useGetAllThreadsQuery, useGetOneThreadQuery } = threadsApi;

@@ -13,6 +13,7 @@ import useAuth from "./hooks/useAuth";
 import Chat from "./screens/Chat/Chat";
 import Login from "./screens/Login/Login";
 import NotFound from "./screens/NotFound";
+import Thread from "./screens/Thread/Thread";
 import { AuthState } from "./state/authSlice";
 
 function App() {
@@ -27,6 +28,7 @@ function AppRouter() {
       <Switch>
         <PrivateRoute path="/" exact component={Chat} />
         <PublicOnlyRoute path="/login" component={Login} />
+        <PrivateRoute path="/thread/:name" component={Thread} />
         <Route path="*">
           <NotFound />
         </Route>
