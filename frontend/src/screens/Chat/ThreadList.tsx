@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useGetAllThreadsQuery } from "../../state/threadsApi";
-import { APIThread } from "../../types";
+import { Thread } from "../../types";
 
 function ThreadList() {
   const { data: threads, isLoading } = useGetAllThreadsQuery(undefined);
@@ -21,7 +21,7 @@ function ThreadList() {
 export default ThreadList;
 
 interface ThreadLineProps {
-  thread: APIThread;
+  thread: Thread;
 }
 
 function ThreadLine({ thread }: ThreadLineProps) {

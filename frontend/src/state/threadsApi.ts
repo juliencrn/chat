@@ -1,9 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
-import { APIThread } from "../types";
+import { Thread } from "../types";
 import getBaseQuery from "./getBaseQuery";
 
-export type AllThreadsResponse = APIThread[];
+export type AllThreadsResponse = Thread[];
 
 export const threadsApi = createApi({
   reducerPath: "threadsApi",

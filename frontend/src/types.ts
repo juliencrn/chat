@@ -18,13 +18,13 @@ export interface UserConnection {
 
 export type RichUserConnection = User & Partial<UserConnection>;
 
-export interface Thread {
+export interface LegacyThread {
   name: string;
   connections: UserConnection[];
   messages: Message[];
 }
 
-export interface APIThread {
+export interface Thread {
   id: string;
   name: string;
   createdAt: number;

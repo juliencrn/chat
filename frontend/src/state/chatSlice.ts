@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { Message, Thread, UserConnection } from "../types";
+import { LegacyThread, Message, UserConnection } from "../types";
 
-type ChatState = Thread;
+type ChatState = LegacyThread;
 
 const initialState: ChatState = {
   name: "Chat default thread",
