@@ -17,6 +17,7 @@ import { authApi } from "./authApi";
 import authReducer from "./authSlice";
 import chatReducer from "./chatSlice";
 import { messagesApi } from "./messagesApi";
+import { threadsApi } from "./threadsApi";
 import { usersApi } from "./usersApi";
 
 const rootReducer = combineReducers({
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [messagesApi.reducerPath]: messagesApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
+  [threadsApi.reducerPath]: threadsApi.reducer,
 });
 
 const persistConfig: PersistConfig<RootState> = {
@@ -43,7 +45,12 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(authApi.middleware, messagesApi.middleware, usersApi.middleware),
+    }).concat(
+      authApi.middleware,
+      messagesApi.middleware,
+      usersApi.middleware,
+      threadsApi.middleware,
+    ),
 });
 
 export const persistor = persistStore(store);

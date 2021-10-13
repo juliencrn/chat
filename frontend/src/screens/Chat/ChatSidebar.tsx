@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "../../components/Icons";
+import ThreadList from "./ThreadList";
 import UserList from "./UserList";
 
 function ChatSidebar() {
@@ -30,7 +31,12 @@ function ChatSidebar() {
         )}
       </div>
 
-      <UserList />
+      <div className="mb-4">
+        <ThreadList />
+      </div>
+      <div className="mb-4">
+        <UserList />
+      </div>
     </aside>
   );
 }
