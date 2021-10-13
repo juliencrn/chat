@@ -12,7 +12,10 @@ export class Thread {
   @Transform(({ obj }) => obj._id, { toClassOnly: true })
   _id: Types.ObjectId;
 
-  @Prop({ unique: true })
+  @Prop({ required: true })
+  slug: string;
+
+  @Prop({ required: true })
   name: string;
 
   @Prop({ type: Date, default: Date.now })

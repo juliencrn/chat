@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { isValidObjectId, Model } from "mongoose";
+import slugify from "slugify";
 import { UserDocument } from "src/users/schemas/user.schema";
 import { UsersService } from "src/users/users.service";
 
@@ -30,6 +31,7 @@ export class ThreadsService {
 
     const createdThread = new this.threadModel({
       name: createThreadDto.name,
+      slug: this.slugify(createThreadDto.name),
       owner: owner._id,
     });
     const thread = await createdThread.save();
@@ -57,10 +59,10 @@ export class ThreadsService {
     return thread;
   }
 
-  async findOneByName(name: string): Promise<ThreadDocument> {
+  async findOneBySlug(slug: string): Promise<ThreadDocument> {
     let thread: ThreadDocument;
     try {
-      thread = await this.findByName(name);
+      thread = await this.findBySlug(slug);
     } catch (error) {
       throw new NotFoundException("Could not find thread");
     }
@@ -93,8 +95,8 @@ export class ThreadsService {
     return await thread.delete();
   }
 
-  private async findByName(name: string): Promise<ThreadDocument> {
-    return await this.threadModel.findOne({ name }).populate("owner").exec();
+  private async findBySlug(slug: string): Promise<ThreadDocument> {
+    return await this.threadModel.findOne({ slug }).populate("owner").exec();
   }
 
   private validateObjectId(id: string) {
@@ -110,10 +112,14 @@ export class ThreadsService {
   }
 
   private async validateIfNameIsAvailable(name: string): Promise<void> {
-    const thread = await this.findByName(name);
+    const thread = await this.findBySlug(this.slugify(name));
     if (!!thread) {
       throw new BadRequestException("This thread name is already taken");
     }
+  }
+
+  private slugify(name: string): string {
+    return slugify(name, { lower: true });
   }
 
   private async findUserById(id: string): Promise<UserDocument> {
