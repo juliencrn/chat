@@ -8,7 +8,6 @@ import { UsersService } from "src/users/users.service";
 export type UserRequestBody = Pick<User, "id" | "username">;
 export type AccessToken = {
   accessToken: string;
-  user: UserRequestBody;
 };
 export type JwtPayload = { sub: string; username: string };
 
@@ -38,19 +37,16 @@ export class AuthService {
   async login({ id, username }: User): Promise<AccessToken> {
     const payload: JwtPayload = { sub: id, username };
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken, user: { id, username } };
+    return { accessToken };
   }
 
   async register(createUserDto: CreateUserDto): Promise<AccessToken> {
-    // Check if the username is available
-    const { username } = createUserDto;
-    const existingUser = await this.usersService.findByUsername(username);
-    if (existingUser) {
-      throw new BadRequestException("Username already taken");
-    }
-
+    await this.validateIfUsernameIsAvailable(createUserDto.username);
     const password = await this.hashPassword(createUserDto.password);
-    const createdUser = await this.usersService.create({ username, password });
+    const createdUser = await this.usersService.create({
+      username: createUserDto.username,
+      password,
+    });
     return await this.login(createdUser);
   }
 
@@ -60,5 +56,12 @@ export class AuthService {
 
   async comparePassword(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
+  }
+
+  private async validateIfUsernameIsAvailable(username: string): Promise<void> {
+    const existingUser = await this.usersService.findByUsername(username);
+    if (existingUser) {
+      throw new BadRequestException("Username already taken");
+    }
   }
 }

@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { isValidObjectId, Model } from "mongoose";
+import { UserDocument } from "src/users/schemas/user.schema";
 import { UsersService } from "src/users/users.service";
 
 import { CreateThreadDto } from "./dto/create-thread.dto";
@@ -24,22 +25,15 @@ export class ThreadsService {
     createThreadDto: CreateThreadDto,
     ownerId?: string,
   ): Promise<ThreadDocument> {
-    const owner = await this.usersService.findById(ownerId);
-    if (!owner) {
-      throw new BadRequestException("Could not find user provided as ownerId");
-    }
-
-    // Check is the chosen name is available
-    const thread = await this.findByName(createThreadDto.name);
-    if (!!thread) {
-      throw new BadRequestException("This thread name is already taken");
-    }
+    const owner = await this.findUserById(ownerId);
+    await this.validateIfNameIsAvailable(createThreadDto.name);
 
     const createdThread = new this.threadModel({
       name: createThreadDto.name,
-      owner,
+      owner: owner._id,
     });
-    return await createdThread.save();
+    const thread = await createdThread.save();
+    return await thread.populate("owner");
   }
 
   async findAll(): Promise<ThreadDocument[]> {
@@ -110,9 +104,30 @@ export class ThreadsService {
   }
 
   private validateIsOwner(thread: ThreadDocument, ownerId?: string) {
-    const threadOwnerId = thread.owner._id.toString();
-    if (!ownerId || ownerId !== threadOwnerId) {
+    if (!ownerId || ownerId !== thread.owner._id.toString()) {
       throw new ForbiddenException("Only the owner can update a thread");
     }
+  }
+
+  private async validateIfNameIsAvailable(name: string): Promise<void> {
+    const thread = await this.findByName(name);
+    if (!!thread) {
+      throw new BadRequestException("This thread name is already taken");
+    }
+  }
+
+  private async findUserById(id: string): Promise<UserDocument> {
+    let user: UserDocument;
+    try {
+      user = await this.usersService.findById(id);
+    } catch (error) {
+      throw new NotFoundException("Could not find user");
+    }
+
+    if (!user) {
+      throw new NotFoundException("Could not find user");
+    }
+
+    return user;
   }
 }

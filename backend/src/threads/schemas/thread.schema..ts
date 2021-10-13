@@ -20,7 +20,7 @@ export class Thread {
 
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   @Type(() => User)
-  owner: User;
+  owner: Types.ObjectId;
 
   @Expose()
   get id(): string {

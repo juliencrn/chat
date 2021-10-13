@@ -18,6 +18,12 @@ interface UserConnection {
   connectionId: string;
 }
 
+interface CreateSocketMessageDto {
+  text: string;
+  userId: string;
+  threadId: string;
+}
+
 @UseGuards(WebSocketJwtAuthGuard)
 @WebSocketGateway({
   // TODO: Use environnement variable instead
@@ -76,11 +82,11 @@ export class ChatGateway
   }
 
   @SubscribeMessage("message")
-  async onChat(@MessageBody() [userId, text]: [string, string]) {
-    const chatMessage = await this.messagesService.create({ userId, text });
+  async onChat(@MessageBody() createMessageDto: CreateSocketMessageDto) {
+    const chatMessage = await this.messagesService.create(createMessageDto);
     const serializedMessage = this.messagesService.serialize(chatMessage);
 
-    this.logger.log(`Message received "${text}"`);
+    this.logger.log(`Message received "${createMessageDto.text}"`);
     this.server.emit("message", excludePrefix(serializedMessage));
   }
 
