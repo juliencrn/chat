@@ -83,7 +83,9 @@ export class ChatGateway
 
   @SubscribeMessage("message")
   async onChat(@MessageBody() createMessageDto: CreateSocketMessageDto) {
-    const chatMessage = await this.messagesService.create(createMessageDto);
+    const { userId: ownerId, ...dto } = createMessageDto;
+
+    const chatMessage = await this.messagesService.create(dto, ownerId);
     const serializedMessage = this.messagesService.serialize(chatMessage);
 
     this.logger.log(`Message received "${createMessageDto.text}"`);
