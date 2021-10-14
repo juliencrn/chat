@@ -50,6 +50,21 @@ export class MessagesService {
     if (!messages) {
       return [];
     }
+
+    return messages;
+  }
+
+  async findAllByThread(threadIds: string[]): Promise<MessageDocument[]> {
+    const messages = await this.messageModel
+      .find()
+      .where("thread")
+      .in(threadIds.map(id => new mongo.ObjectId(id)))
+      .populate("user")
+      .populate("thread")
+      .exec();
+    if (!messages) {
+      return [];
+    }
     return messages;
   }
 
