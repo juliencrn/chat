@@ -36,8 +36,7 @@ export class ChatGateway
   @WebSocketServer()
   server: Server;
 
-  private userCount = 0;
-  private users = new Map();
+  private userConnections = [];
   private logger: Logger = new Logger("ChatGateway");
 
   constructor(
@@ -50,35 +49,29 @@ export class ChatGateway
   }
 
   async handleConnection(client: Socket) {
-    const userMap = this.getUserMap(client);
-    const userConnection = this.mapToUserConnection(userMap);
+    const userConnection = this.getConnection(client);
 
-    // Print new connected user
-    this.logger.log(`Client connected`, userConnection);
-    this.server.emit("user", userConnection);
+    this.userConnections.push(userConnection);
 
-    // Add user to the users map
-    this.users.set(...userMap);
-
-    // Print users map
-    const users = [...this.users].map(this.mapToUserConnection);
-    this.server.emit("users", users);
+    this.logger.log(`Client connected (${JSON.stringify(userConnection)})`);
+    this.server.emit("users", this.userConnections);
   }
 
   async handleDisconnect(client: Socket) {
-    const userMap = this.getUserMap(client);
-    const userConnection = this.mapToUserConnection(userMap);
+    const userConnection = this.getConnection(client);
 
-    // Print new disconnected user
-    this.logger.log(`Client disconnected`, userConnection);
-    this.server.emit("user", userConnection);
+    // Remove connection from the users
+    this.userConnections = this.userConnections.filter(
+      conn => conn.connectionId !== userConnection.connectionId,
+    );
 
-    // Remove user from the users map
-    this.users.delete(userMap[0]);
+    this.logger.log(`Client disconnected (${JSON.stringify(userConnection)})`);
+    this.server.emit("users", this.userConnections);
+  }
 
-    // Print users map
-    const users = [...this.users].map(this.mapToUserConnection);
-    this.server.emit("users", users);
+  @SubscribeMessage("users")
+  async onUsers() {
+    this.server.emit("users", this.userConnections);
   }
 
   @SubscribeMessage("message")
@@ -92,18 +85,9 @@ export class ChatGateway
     this.server.emit("message", excludePrefix(serializedMessage));
   }
 
-  private mapToUserConnection(
-    userMapItem: [userId: string, connectionId: string],
-  ): UserConnection {
-    return {
-      userId: userMapItem[0],
-      connectionId: userMapItem[1],
-    };
-  }
-
-  private getUserMap(client: Socket): [string, string] {
+  private getConnection(client: Socket): UserConnection {
     const userId: string = client.handshake.query.userId.toString();
-    return [userId, client.id];
+    return { userId, connectionId: client.id };
   }
 }
 
