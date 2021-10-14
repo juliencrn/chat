@@ -1,18 +1,18 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
     },
   },
   extends: [
-    'plugin:react-hooks/recommended',
-    'plugin:react/recommended',
-    'plugin:jsx-a11y/recommended',
+    "plugin:react-hooks/recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
   ],
-  plugins: ['react', 'simple-import-sort', 'prettier', 'jsx-a11y'],
+  plugins: ["react", "simple-import-sort", "prettier", "jsx-a11y"],
   env: {
     browser: true,
     es6: true,
@@ -20,38 +20,39 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '17.0.2',
+      version: "17.0.2",
     },
   },
   rules: {
-    'prettier/prettier': 'warn',
-    'react/prop-types': 'off',
-    'sort-imports': 'off',
-    'import/order': 'off',
-    'simple-import-sort/exports': 'warn',
-    'simple-import-sort/imports': [
-      'warn',
+    "prettier/prettier": "warn",
+    "react/prop-types": "off",
+    "sort-imports": "off",
+    "import/order": "off",
+    "simple-import-sort/exports": "warn",
+    "simple-import-sort/imports": [
+      "warn",
       {
         groups: [
-          ['^\\u0000'], // side effect (E.g.'import 'normalize.css'')
-          ['^react$'],
-          ['^[^.]'], // Libs
-          ['^../|^~/|^./'],
+          ["^\\u0000"], // side effect (E.g.'import 'normalize.css'')
+          ["^react$"],
+          ["^[^.]"], // Libs
+          ["^../|^~/|^./"],
         ],
       },
     ],
   },
   overrides: [
     {
-      files: ['*.ts', '*.tsx'],
-      plugins: ['@typescript-eslint/eslint-plugin'],
-      extends: ['plugin:@typescript-eslint/recommended'],
+      files: ["*.ts", "*.tsx"],
+      plugins: ["@typescript-eslint/eslint-plugin"],
+      extends: ["plugin:@typescript-eslint/recommended"],
       rules: {
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
-        '@typescript-eslint/no-unused-vars': [
-          'warn',
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
           {
-            argsIgnorePattern: '^_',
+            argsIgnorePattern: "^_",
             ignoreRestSiblings: true,
           },
         ],
@@ -71,4 +72,4 @@ module.exports = {
     //   },
     // },
   ],
-}
+};
