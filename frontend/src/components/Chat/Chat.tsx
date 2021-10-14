@@ -5,8 +5,8 @@ import { Socket } from "socket.io-client";
 
 import {
   addMessage,
+  refreshConnections,
   setAllMessages,
-  updateConnections,
 } from "../../state/chatSlice";
 import { useGetMessagesByThreadQuery } from "../../state/messagesApi";
 import { Message, ThreadState, User, UserConnection } from "../../types";
@@ -34,6 +34,12 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
   const messagesQuery = useGetMessagesByThreadQuery(threadId);
   const { isSuccess, data: initialMessages } = messagesQuery;
 
+  // Ask fresh user list on load
+  useEffect(() => {
+    socket.emit("users");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Load initial messages
   useEffect(() => {
     if (initialMessages && !threadState.fetched && isSuccess) {
@@ -47,11 +53,10 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
     // Generals events
     socket.on("connect", () => console.log("Connected"));
     socket.on("disconnect", () => console.log("Disconnected"));
-    socket.on("exception", (data: any) => console.log("Exception", data));
 
     // Business events
     socket.on("users", (conns: UserConnection[]) => {
-      dispatch(updateConnections(conns));
+      dispatch(refreshConnections(conns));
     });
 
     socket.on("message", (message: Message) => {

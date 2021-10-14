@@ -9,17 +9,17 @@ import { RichUserConnection, User } from "../types";
 type HookReturn = [RichUserConnection[], { isLoading: boolean }];
 
 function useConnectedUserList(currentUser?: User): HookReturn {
-  const { data, isLoading } = useGetUsersQuery(undefined);
+  const { data: allUsers, isLoading } = useGetUsersQuery(undefined);
   const { connections } = useSelector((state: RootState) => state.chat);
   const [users, setUsers] = useState<RichUserConnection[]>([]);
 
   useEffect(() => {
-    if (!data) {
+    if (!allUsers) {
       return;
     }
 
     // Merge Users & Connections
-    const newUserList: RichUserConnection[] = data.map(user => {
+    const newUserList: RichUserConnection[] = allUsers.map(user => {
       const matchConn = connections.find(conn => conn.userId === user.id);
       return matchConn ? { ...user, ...matchConn } : user;
     });
@@ -44,7 +44,7 @@ function useConnectedUserList(currentUser?: User): HookReturn {
     const sortedUserList = [...me, ...connected, ...offline];
 
     setUsers(sortedUserList);
-  }, [data, connections, currentUser]);
+  }, [allUsers, connections, currentUser]);
 
   return [users, { isLoading }];
 }
