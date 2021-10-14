@@ -7,7 +7,7 @@ import * as yup from "yup";
 
 import TextInput from "../../components/TextInput";
 import { useLoginMutation } from "../../state/authApi";
-import { logout, setCompleteUser } from "../../state/authSlice";
+import { logout, setToken } from "../../state/authSlice";
 
 export interface LoginFormValue {
   username: string;
@@ -15,7 +15,7 @@ export interface LoginFormValue {
 }
 
 const initialValues: LoginFormValue = {
-  username: "julien",
+  username: "julien2",
   password: "password",
 };
 
@@ -35,7 +35,7 @@ function LoginForm() {
   const submit = form.handleSubmit(async (values: LoginFormValue) => {
     try {
       const res = await login(values).unwrap();
-      dispatch(setCompleteUser(res));
+      dispatch(setToken(res.accessToken));
     } catch (error) {
       dispatch(logout());
     }

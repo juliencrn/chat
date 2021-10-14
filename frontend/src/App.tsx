@@ -1,96 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import {
-  BrowserRouter,
-  Redirect,
-  Route,
-  RouteComponentProps,
-  RouteProps,
-  Switch,
-} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import useAuth from "./hooks/useAuth";
-import Home from "./pages/Home";
-import Login from "./pages/Login/Login";
-import NotFound from "./pages/NotFound";
-import Thread from "./pages/Thread/Thread";
-import { AuthState } from "./state/authSlice";
+import Router from "./Router";
+import { authSelector, logout, setUser } from "./state/authSlice";
+import { useProfileQuery } from "./state/usersApi";
 
 function App() {
-  return <AppRouter />;
+  useAutoFetchUserProfile();
+
+  return <Router />;
 }
 
 export default App;
 
-function AppRouter() {
-  return (
-    <BrowserRouter>
-      <Switch>
-        <PrivateRoute path="/" exact component={Home} />
-        <PublicOnlyRoute path="/login" component={Login} />
-        <PrivateRoute path="/thread/:name" component={Thread} />
-        <Route path="*">
-          <NotFound />
-        </Route>
-      </Switch>
-    </BrowserRouter>
-  );
-}
+function useAutoFetchUserProfile() {
+  const { accessToken, user } = useSelector(authSelector);
+  const dispatch = useDispatch();
 
-export interface PrivateRouteProps extends RouteComponentProps, AuthState {}
+  // Fetch user profile if is auth and user data missing
+  const { data: newUser, isSuccess } = useProfileQuery(accessToken, {
+    skip: !accessToken || !!user,
+  });
 
-interface CustomRouteProps<T = RouteComponentProps> extends RouteProps {
-  component: (props: T) => React.ReactElement | null;
-}
+  // Store user profile in the Redux state
+  useEffect(() => {
+    if (newUser && isSuccess) {
+      dispatch(setUser(newUser));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, newUser]);
 
-function PrivateRoute({
-  component: Component,
-  path,
-  ...rest
-}: CustomRouteProps<PrivateRouteProps>) {
-  const auth = useAuth();
-  return (
-    <Route
-      path={path}
-      {...rest}
-      render={props =>
-        auth ? (
-          <Component {...{ ...props, ...auth }} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: props.location },
-            }}
-          />
-        )
-      }
-    />
-  );
-}
-
-function PublicOnlyRoute({
-  component: Component,
-  path,
-  ...rest
-}: CustomRouteProps) {
-  const auth = useAuth();
-  return (
-    <Route
-      path={path}
-      {...rest}
-      render={props =>
-        !auth ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/",
-              state: { from: props.location },
-            }}
-          />
-        )
-      }
-    />
-  );
+  // Logout is the auth token is missing
+  if (!accessToken && user) {
+    dispatch(logout());
+  }
 }

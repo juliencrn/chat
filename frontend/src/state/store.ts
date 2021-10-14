@@ -32,7 +32,7 @@ const rootReducer = combineReducers({
 const persistConfig: PersistConfig<RootState> = {
   key: "root",
   storage,
-  whitelist: ["auth", "usersApi", "threadsApi"],
+  whitelist: ["auth"],
   version: 0,
 };
 

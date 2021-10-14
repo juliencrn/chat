@@ -14,8 +14,8 @@ export const usersApi = createApi({
     getUser: builder.query<User, string>({
       query: userId => `/${userId}`,
     }),
-    profile: builder.query<User, undefined>({
-      query: () => "/profile",
+    profile: builder.query<User, string | undefined>({
+      query: _token => "/profile",
     }),
   }),
 });
