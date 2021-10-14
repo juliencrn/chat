@@ -1,14 +1,27 @@
-export interface User {
+export interface Model {
   id: string;
-  username: string;
   createdAt: number;
 }
 
-export interface Message {
-  id: string;
+export interface User extends Model {
+  username: string;
+}
+
+export interface Thread extends Model {
+  slug: string;
+  name: string;
+  owner: User;
+}
+
+export interface ThreadState extends Thread {
+  fetched: boolean;
+  messages: Message[];
+}
+
+export interface Message extends Model {
   user: User;
   text: string;
-  createdAt: number;
+  thread: Thread;
 }
 
 export interface UserConnection {
@@ -18,15 +31,6 @@ export interface UserConnection {
 
 export type RichUserConnection = User & Partial<UserConnection>;
 
-export interface LegacyThread {
-  name: string;
-  connections: UserConnection[];
-  messages: Message[];
-}
-
-export interface Thread {
-  id: string;
-  name: string;
-  createdAt: number;
-  owner: User;
+export interface AccessToken {
+  accessToken: string;
 }

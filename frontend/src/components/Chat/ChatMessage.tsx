@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Message } from "../../types";
+import { compareTime } from "../../utils";
 
 export interface ChatMessageProps {
   message: Message;
@@ -36,11 +37,16 @@ function ChatMessage({ message, prev }: ChatMessageProps) {
     </li>
   );
 
-  return prev && prev.user.id === user.id ? (
-    <MinimizedMessage />
-  ) : (
-    <ExpandedMessage />
-  );
+  let collapse = false;
+  if (prev) {
+    const sameAuthor = prev.user.id === user.id;
+    const diff = compareTime(message, prev);
+    const timeIsNear = diff < 5 * 60 * 1000; // 5min;
+
+    collapse = sameAuthor && timeIsNear;
+  }
+
+  return collapse ? <MinimizedMessage /> : <ExpandedMessage />;
 }
 
 export default ChatMessage;

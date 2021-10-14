@@ -6,7 +6,7 @@ import { useGetAllThreadsQuery } from "../../state/threadsApi";
 import { Thread } from "../../types";
 
 function ThreadList() {
-  const { name } = useParams<{ name: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { data: threads, isLoading } = useGetAllThreadsQuery(undefined);
 
   return (
@@ -19,7 +19,7 @@ function ThreadList() {
             <ThreadLine
               key={thread.id}
               thread={thread}
-              active={thread.name === name}
+              active={thread.slug === slug}
             />
           ))}
       </ul>
@@ -41,7 +41,7 @@ function ThreadLine({ thread, active }: ThreadLineProps) {
       className={`flex items-center justify-start mb-1 ${""}`}
     >
       <Link
-        to={`/thread/${thread.name}`}
+        to={`/thread/${thread.slug}`}
         className={` pl-2 link capitalize ${
           active ? "text-white font-bold" : "text-gray-500"
         }`}

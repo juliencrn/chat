@@ -3,12 +3,12 @@ import React from "react";
 import { useDispatch } from "react-redux";
 
 import { logout } from "../../state/authSlice";
-import { LegacyThread, User } from "../../types";
+import { Thread, User } from "../../types";
 import { LogoutIcon } from "../Icons";
 
 interface ChatHeaderProps {
   user: User;
-  thread: LegacyThread;
+  thread: Thread;
 }
 
 function ChatHeader({ user, thread }: ChatHeaderProps) {

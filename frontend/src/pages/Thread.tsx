@@ -30,36 +30,28 @@ function Thread(props: ProtectedRouteProps) {
     query: { accessToken, userId: user.id },
   });
 
-  const isThreadReady: boolean = !!thread && !!chat.threads[thread.id];
+  const currentThread = !!thread && thread.slug === threadSlug ? thread : null;
 
   useEffect(() => {
-    if (isSuccess && !!thread && !isThreadReady) {
-      dispatch(initThread(thread));
+    if (!isSuccess || !currentThread) {
+      return;
+    }
+
+    const threadState = chat.threads[currentThread.slug];
+    if (!threadState) {
+      dispatch(initThread(currentThread));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, thread, isThreadReady]);
+  }, [isSuccess, thread, threadSlug]);
 
   if (isError) {
     return <NotFound />;
   }
 
-  if (isLoading) {
+  const threadState = !!currentThread && chat.threads[currentThread.slug];
+
+  if (isLoading || !currentThread || !socket || !threadState) {
     return <PageLoader />;
-  }
-
-  if (!thread) {
-    console.error("Oups, no thread found");
-    return null;
-  }
-
-  if (!socket) {
-    return <div>Socket initializing or error</div>;
-  }
-
-  const threadState = chat.threads[thread.id];
-
-  if (!threadState) {
-    return <div>Thread initializing...</div>;
   }
 
   return <Chat socket={socket} threadState={threadState} user={user} />;
