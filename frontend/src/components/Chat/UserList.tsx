@@ -1,5 +1,7 @@
 import React from "react";
 
+import cn from "classnames";
+
 import useConnectedUserList from "../../hooks/useConnectedUserList";
 import { useProfileQuery } from "../../state/usersApi";
 import { RichUserConnection } from "../../types";
@@ -9,15 +11,12 @@ function UserList() {
   const [users, { isLoading }] = useConnectedUserList(currentUser);
 
   return (
-    <div>
-      <h3>Users</h3>
-      <ul>
-        {isLoading && <li>...</li>}
-        {users.map(user => (
-          <UserLine key={user.id} user={user} me={currentUser} />
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {isLoading && <li>...</li>}
+      {users.map(user => (
+        <UserLine key={user.id} user={user} me={currentUser} />
+      ))}
+    </ul>
   );
 }
 
@@ -33,18 +32,22 @@ function UserLine({ user, me }: UserLineProps) {
   const isMe = me && me.id === user.id;
 
   return (
-    <li key={user.id} className={`flex items-center justify-start mb-1 ${""}`}>
+    <li className={`flex items-center justify-start mb-1`}>
+      <span className="w-4 flex justify-center">
+        <span
+          className={`w-2 h-2 block rounded-full  ${
+            online ? "bg-green-300" : "bg-gray-600"
+          }`}
+        ></span>
+      </span>
       <span
-        className={`w-2 h-2 block rounded-full  ${
-          online ? "bg-green-300" : "bg-gray-600"
-        }`}
-      ></span>
-      <span
-        className={` pl-2 capitalize ${
-          online ? "text-white font-bold" : "text-gray-500"
-        }`}
+        className={cn(
+          "pl-2 link capitalize",
+          online ? "text-gray-300" : "text-gray-500",
+        )}
       >
-        {user.username} {isMe ? "(Me)" : ""}
+        <span className={cn(online && "font-bold")}>{user.username}</span>
+        {isMe && <span className="text-gray-500 pl-2">you</span>}
       </span>
     </li>
   );

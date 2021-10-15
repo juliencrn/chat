@@ -1,5 +1,7 @@
 import React, { ChangeEventHandler, forwardRef, HTMLProps } from "react";
 
+import cn from "classnames";
+
 export interface TextInputProps {
   name: string;
   onChange: ChangeEventHandler;
@@ -25,9 +27,10 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           type="text"
           {...inputProps}
           {...{ onBlur, onChange, id: name, name }}
-          className={`shadow appearance-none border ${
-            errors ? "border-red-500" : ""
-          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+          className={cn(
+            "rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline shadow appearance-none border",
+            { ["border-red-500"]: errors },
+          )}
         />
         {errors && <p className="text-red-500 text-xs italic">{errors}</p>}
       </div>

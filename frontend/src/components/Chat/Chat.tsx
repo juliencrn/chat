@@ -76,9 +76,9 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
   };
 
   return (
-    <div className="flex-1 flex">
+    <div className="fixed top-0 left-0 h-full w-full flex">
       <ChatSidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative pb-16">
         <ChatHeader user={currentUser} thread={threadState} />
         <ChatMessageList messages={threadState.messages} />
         <ChatForm onMessage={handleMessage} />

@@ -7,7 +7,7 @@ interface LayoutProps {
 
 function PublicLayout({ children, title }: LayoutProps) {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="fixed w-full h-full top-0 left-0 flex flex-col">
       <div className="w-full max-w-xs m-auto">
         <h2 className="font-bold text-xl tracking-wide mb-2 text-center">
           {title}
