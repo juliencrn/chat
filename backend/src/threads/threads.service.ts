@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import to from "await-to-js";
 import { isValidObjectId, Model } from "mongoose";
 import slugify from "slugify";
 import { UserDocument } from "src/users/schemas/user.schema";
@@ -45,14 +46,12 @@ export class ThreadsService {
 
   async findOne(id: string): Promise<ThreadDocument> {
     this.validateObjectId(id);
-    let thread: ThreadDocument;
-    try {
-      thread = await this.threadModel.findById(id).populate("owner").exec();
-    } catch (error) {
-      throw new NotFoundException("Could not find thread");
-    }
 
-    if (!thread) {
+    const [err, thread] = await to(
+      this.threadModel.findById(id).populate("owner").exec(),
+    );
+
+    if (!thread || err) {
       throw new NotFoundException("Could not find thread");
     }
 
@@ -60,14 +59,9 @@ export class ThreadsService {
   }
 
   async findOneBySlug(slug: string): Promise<ThreadDocument> {
-    let thread: ThreadDocument;
-    try {
-      thread = await this.findBySlug(slug);
-    } catch (error) {
-      throw new NotFoundException("Could not find thread");
-    }
+    const [err, thread] = await to(this.findBySlug(slug));
 
-    if (!thread) {
+    if (!thread || err) {
       throw new NotFoundException("Could not find thread");
     }
 
@@ -123,14 +117,9 @@ export class ThreadsService {
   }
 
   private async findUserById(id: string): Promise<UserDocument> {
-    let user: UserDocument;
-    try {
-      user = await this.usersService.findById(id);
-    } catch (error) {
-      throw new NotFoundException("Could not find user");
-    }
+    const [err, user] = await to(this.usersService.findById(id));
 
-    if (!user) {
+    if (err || !user) {
       throw new NotFoundException("Could not find user");
     }
 

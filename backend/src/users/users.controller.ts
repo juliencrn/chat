@@ -7,6 +7,7 @@ import {
   SerializeOptions,
   UseInterceptors,
 } from "@nestjs/common";
+import to from "await-to-js";
 import MongooseClassSerializerInterceptor from "src/interceptors/mongooseClassSerializer.interceptor";
 
 import { User } from "./schemas/user.schema";
@@ -30,15 +31,12 @@ export class UsersController {
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    let user;
-    try {
-      user = await this.usersService.findById(id);
-    } catch (error) {
+    const [err, user] = await to(this.usersService.findById(id));
+
+    if (!user || err) {
       throw new NotFoundException("Could not find user");
     }
-    if (!user) {
-      throw new NotFoundException("Could not find user");
-    }
+
     return user;
   }
 }

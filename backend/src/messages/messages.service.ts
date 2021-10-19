@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import to from "await-to-js";
 import { classToPlain, plainToClass } from "class-transformer";
 import { isValidObjectId, Model, mongo } from "mongoose";
 import { ThreadDocument } from "src/threads/schemas/thread.schema.";
@@ -15,6 +16,7 @@ import { UsersService } from "src/users/users.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { UpdateMessageDto } from "./dto/update-message.dto";
 import { Message, MessageDocument } from "./schemas/message.schema";
+
 @Injectable()
 export class MessagesService {
   constructor(
@@ -47,6 +49,7 @@ export class MessagesService {
       .populate("user")
       .populate("thread")
       .exec();
+
     if (!messages) {
       return [];
     }
@@ -55,14 +58,17 @@ export class MessagesService {
   }
 
   async findAllByThread(threadIds: string[]): Promise<MessageDocument[]> {
-    const messages = await this.messageModel
-      .find()
-      .where("thread")
-      .in(threadIds.map(id => new mongo.ObjectId(id)))
-      .populate("user")
-      .populate("thread")
-      .exec();
-    if (!messages) {
+    const [error, messages] = await to(
+      this.messageModel
+        .find()
+        .where("thread")
+        .in(threadIds.map(id => new mongo.ObjectId(id)))
+        .populate("user")
+        .populate("thread")
+        .exec(),
+    );
+
+    if (error || !messages) {
       return [];
     }
     return messages;
@@ -70,19 +76,15 @@ export class MessagesService {
 
   async findOne(id: string): Promise<MessageDocument> {
     this.validateObjectId(id);
-    let message: MessageDocument;
-    try {
-      message = await this.messageModel
-        .findById(id)
-        .populate("user")
-        .populate("thread")
-        .exec();
-    } catch (error) {
+
+    const [error, message] = await to(
+      this.messageModel.findById(id).populate("user").populate("thread").exec(),
+    );
+
+    if (error || !message) {
       throw new NotFoundException("Could not find message");
     }
-    if (!message) {
-      throw new NotFoundException("Could not find message");
-    }
+
     return message;
   }
 
@@ -118,28 +120,22 @@ export class MessagesService {
   }
 
   private async findThreadById(id: string): Promise<ThreadDocument> {
-    let thread: ThreadDocument;
-    try {
-      thread = await this.threadsService.findOne(id);
-    } catch (error) {
+    const [err, thread] = await to(this.threadsService.findOne(id));
+
+    if (!thread || err) {
       throw new BadRequestException("Could not find thread");
     }
-    if (!thread) {
-      throw new BadRequestException("Could not find thread");
-    }
+
     return thread;
   }
 
   private async findUserById(id: string): Promise<UserDocument> {
-    let user: UserDocument;
-    try {
-      user = await this.usersService.findById(id);
-    } catch (error) {
+    const [err, user] = await to(this.usersService.findById(id));
+
+    if (!user || err) {
       throw new BadRequestException("Could not find user");
     }
-    if (!user) {
-      throw new BadRequestException("Could not find user");
-    }
+
     return user;
   }
 
