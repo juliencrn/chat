@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Message, User } from "../../types";
+import { Message } from "../../types";
 import { compareTime } from "../../utils";
 import Avatar from "../Avatar";
 
