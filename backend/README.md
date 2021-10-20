@@ -58,6 +58,28 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Docker
+
+### Build image
+
+```bash
+# CI: Build and run tests
+$ docker build --tag chat-backend-docker --target test .
+
+# Prepare dev bundle
+$ docker build --tag chat-backend-docker --target dev .
+
+# Prepare prod bundle
+$ docker build --tag chat-backend-docker --target prod .
+```
+
+### Run container
+
+```bash
+# Run the image
+$ docker run --publish 5000:5000 chat-backend-docker
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
