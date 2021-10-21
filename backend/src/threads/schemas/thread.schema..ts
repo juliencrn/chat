@@ -5,8 +5,6 @@ import { User } from "src/users/schemas/user.schema";
 
 export type ThreadDocument = Thread & Document;
 
-// TODO, messages, users
-
 @Schema()
 export class Thread {
   @Transform(({ obj }) => obj._id, { toClassOnly: true })
