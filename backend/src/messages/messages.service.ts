@@ -31,13 +31,13 @@ export class MessagesService {
   ): Promise<MessageDocument> {
     const thread = await this.findThreadById(createMessageDto.threadId);
 
-    const createdAt = new this.messageModel({
+    const createdMessage = new this.messageModel({
       text: createMessageDto.text,
       user: new mongo.ObjectId(ownerId),
       thread: thread._id,
     });
 
-    const message = await createdAt.save();
+    const message = await createdMessage.save();
     const withUser = await message.populate("user");
     const withUserAndThread = await withUser.populate("thread");
     return withUserAndThread;
