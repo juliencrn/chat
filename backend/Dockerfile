@@ -13,11 +13,12 @@ RUN npm run test
 FROM base AS dev
 RUN npm install
 COPY . .
+ENV NODE_ENV=development
 CMD [ "npm", "run", "start:debug" ]
 
 FROM base AS prod
-ENV NODE_ENV=production
 RUN npm ci --production
-COPY . .
 RUN npm run build
+COPY . .
+ENV NODE_ENV=production
 CMD [ "npm", "run", "start:prod" ]
