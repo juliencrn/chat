@@ -34,6 +34,8 @@ $ npm install
 
 ## Running the app
 
+Require MongoDB, node@16
+
 ```bash
 # development
 $ npm run start
@@ -60,6 +62,9 @@ $ npm run test:cov
 
 ## Docker
 
+Alternatively, or if you haven't node or mongo on your machine, you can also use Docker.
+Require Docker and Docker-compose
+
 ### Build image
 
 ```bash
@@ -76,8 +81,11 @@ $ docker build --tag chat-backend-docker --target prod .
 ### Run container
 
 ```bash
-# Run the image
+# Run the image (only nest)
 $ docker run --publish 5000:5000 chat-backend-docker
+
+# Launch dev env (with mongodb)
+$ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 ## Support

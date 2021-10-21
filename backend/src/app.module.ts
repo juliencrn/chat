@@ -16,7 +16,9 @@ import { UsersModule } from "./users/users.module";
     ChatModule,
     MessagesModule,
     // TODO: Use environnement variable instead
-    MongooseModule.forRoot("mongodb://127.0.0.1:27017/chat"),
+    MongooseModule.forRoot(
+      process.env.MONGO_URI || "mongodb://127.0.0.1:27017/chat",
+    ),
     AuthModule,
     UsersModule,
     ThreadsModule,
