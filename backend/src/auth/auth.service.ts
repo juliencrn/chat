@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcrypt";
+import to from "await-to-js";
+import * as bcrypt from "bcryptjs";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { User } from "src/users/schemas/user.schema";
 import { UsersService } from "src/users/users.service";
@@ -19,15 +20,12 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<User | null> {
-    let user;
-    try {
-      user = await this.usersService.findByUsername(username);
-    } catch (error) {}
-
-    if (!user) {
+    const [err, user] = await to(this.usersService.findByUsername(username));
+    if (!user || err) {
       return null;
     }
-    const match = await this.comparePassword(pass, user.password);
+
+    const match = this.comparePassword(pass, user.password);
     if (!match) {
       return null;
     }
@@ -42,7 +40,7 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto): Promise<AccessToken> {
     await this.validateIfUsernameIsAvailable(createUserDto.username);
-    const password = await this.hashPassword(createUserDto.password);
+    const password = this.hashPassword(createUserDto.password);
     const createdUser = await this.usersService.create({
       username: createUserDto.username,
       password,
@@ -50,12 +48,12 @@ export class AuthService {
     return await this.login(createdUser);
   }
 
-  async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 10);
+  hashPassword(password: string): string {
+    return bcrypt.hashSync(password, 10);
   }
 
-  async comparePassword(password: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(password, hash);
+  comparePassword(password: string, hash: string): boolean {
+    return bcrypt.compareSync(password, hash);
   }
 
   private async validateIfUsernameIsAvailable(username: string): Promise<void> {
