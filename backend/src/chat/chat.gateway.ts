@@ -26,8 +26,7 @@ interface CreateSocketMessageDto {
 
 @UseGuards(WebSocketJwtAuthGuard)
 @WebSocketGateway({
-  // TODO: Use environnement variable instead
-  cors: { origin: "http://localhost:3000" },
+  cors: { origin: process.env.FRONTEND_URL },
   transports: ["websocket"],
 })
 export class ChatGateway
