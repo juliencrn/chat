@@ -10,7 +10,7 @@ export interface LoginDto {
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: getBaseQuery("auth"),
+  baseQuery: getBaseQuery({ basePath: "/auth" }),
   endpoints: builder => ({
     login: builder.mutation<AccessToken, LoginDto>({
       query: dto => ({

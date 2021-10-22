@@ -5,7 +5,7 @@ import getBaseQuery from "./getBaseQuery";
 
 export const messagesApi = createApi({
   reducerPath: "messagesApi",
-  baseQuery: getBaseQuery("messages"),
+  baseQuery: getBaseQuery({ basePath: "/messages" }),
   endpoints: builder => ({
     getMessagesByThread: builder.query<Message[], string>({
       query: threadId => (!threadId ? "/" : `/?threadIds=${threadId}`),

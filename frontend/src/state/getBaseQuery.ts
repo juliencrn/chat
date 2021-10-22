@@ -2,9 +2,9 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { RootState } from "./store";
 
-const getBaseQuery = (basePath?: string) =>
+const getBaseQuery = ({ basePath }: { basePath: string }) =>
   fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_API_ENDPOINT}/${basePath}`,
+    baseUrl: `${process.env.REACT_APP_API_ENDPOINT}${basePath}`,
     fetchFn: fetch,
     prepareHeaders: (headers, { getState }) => {
       const accessToken = (getState() as RootState).auth.accessToken;

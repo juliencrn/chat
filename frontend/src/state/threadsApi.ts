@@ -5,7 +5,7 @@ import getBaseQuery from "./getBaseQuery";
 
 export const threadsApi = createApi({
   reducerPath: "threadsApi",
-  baseQuery: getBaseQuery("threads"),
+  baseQuery: getBaseQuery({ basePath: "/threads" }),
   endpoints: builder => ({
     getAllThreads: builder.query<Thread[], undefined>({
       query: () => "",

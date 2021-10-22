@@ -5,7 +5,7 @@ import getBaseQuery from "./getBaseQuery";
 
 export const usersApi = createApi({
   reducerPath: "usersApi",
-  baseQuery: getBaseQuery("users"),
+  baseQuery: getBaseQuery({ basePath: "/users" }),
   endpoints: builder => ({
     // TODO: Require limits like pagination, but will be fixed with thread system
     getUsers: builder.query<User[], undefined>({
