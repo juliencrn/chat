@@ -14,7 +14,19 @@ export const threadsApi = createApi({
     getOneThread: builder.query<Thread, string>({
       query: slug => `/${slug}`,
     }),
+
+    createThread: builder.mutation<Thread, { name: string }>({
+      query: body => ({
+        url: "",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllThreadsQuery, useGetOneThreadQuery } = threadsApi;
+export const {
+  useGetAllThreadsQuery,
+  useGetOneThreadQuery,
+  useCreateThreadMutation,
+} = threadsApi;

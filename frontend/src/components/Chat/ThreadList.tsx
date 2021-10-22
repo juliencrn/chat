@@ -5,11 +5,14 @@ import { Link, useParams } from "react-router-dom";
 
 import { useGetAllThreadsQuery } from "../../state/threadsApi";
 import { Thread } from "../../types";
-import { HashtagIcon, PlusIcon } from "../Icons";
+import { HashtagIcon } from "../Icons";
+import CreateThread from "./CreateThread";
 
 function ThreadList() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: threads, isLoading } = useGetAllThreadsQuery(undefined);
+  const threadsQuery = useGetAllThreadsQuery(undefined);
+
+  const { data: threads, isLoading, refetch } = threadsQuery;
 
   return (
     <ul>
@@ -22,7 +25,7 @@ function ThreadList() {
             active={thread.slug === slug}
           />
         ))}
-      <ThreadButton />
+      <CreateThread onSuccess={refetch} />
     </ul>
   );
 }
@@ -36,6 +39,7 @@ interface ThreadLineProps {
 
 function ThreadLine({ thread, active }: ThreadLineProps) {
   const fontColor = active ? "text-gray-300 font-bold" : "text-gray-500";
+
   return (
     <li className={`flex items-center justify-start mb-1`}>
       <span className={cn(`w-4`, fontColor)}>
@@ -47,24 +51,6 @@ function ThreadLine({ thread, active }: ThreadLineProps) {
       >
         {thread.name}
       </Link>
-    </li>
-  );
-}
-
-function ThreadButton() {
-  return (
-    <li className={`mb-1 mt-2`}>
-      <button
-        className={`flex items-center justify-start cursor-pointer`}
-        onClick={() => alert("Add thread")}
-      >
-        <span className={cn(`w-4 bg-gray-700 text-gray-300 rounded`)}>
-          <PlusIcon />
-        </span>
-        <span className={cn("pl-2 link capitalize text-gray-500")}>
-          Add thread
-        </span>
-      </button>
     </li>
   );
 }

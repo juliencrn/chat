@@ -1,16 +1,16 @@
-import React, { HTMLProps, useRef } from "react";
+import React, { ButtonHTMLAttributes, useRef } from "react";
 
 import cn from "classnames";
 import { useOnClickOutside } from "usehooks-ts";
 
 import { DangerIcon } from "./Icons";
 
-interface ModalProps {
+export interface ModalProps {
   title: string;
   children: React.ReactNode;
-  mode: "danger" | "info";
-  cancelButtonProps?: HTMLProps<HTMLButtonElement>;
-  confirmButtonProps?: HTMLProps<HTMLButtonElement>;
+  mode?: "danger" | "info";
+  cancelButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+  confirmButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>;
   icon?: React.ReactNode;
   onClose: () => void;
 }
@@ -92,14 +92,14 @@ function Modal({
               >
                 {icon || <DangerIcon />}
               </div>
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="w-full mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                 <h3
                   className="text-lg leading-6 font-medium text-gray-900"
                   id="modal-title"
                 >
                   {title}
                 </h3>
-                <div className="mt-2">
+                <div className="mt-2 w-full">
                   {typeof children === "string" ? (
                     <p className="text-sm text-gray-500">{children}</p>
                   ) : (
@@ -113,18 +113,16 @@ function Modal({
             {confirmButtonProps && (
               <button
                 {...confirmButtonProps}
-                type="button"
                 className={cn(
                   isDanger ? colors.danger.bg : colors.info.bg,
                   "w-full inline-flex justify-center rounded border border-transparent shadow px-4 py-2 text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm",
-                  confirmButtonProps.className,
+                  confirmButtonProps?.className,
                 )}
               />
             )}
             {cancelButtonProps && (
               <button
                 {...cancelButtonProps}
-                type="button"
                 className={cn(
                   "mt-3 w-full inline-flex justify-center rounded border border-gray-300 shadow px-4 py-2 bg-white text-base font-medium text-gray-700 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm",
                   cancelButtonProps.className,

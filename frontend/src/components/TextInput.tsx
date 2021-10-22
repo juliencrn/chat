@@ -6,7 +6,7 @@ export interface TextInputProps {
   name: string;
   onChange: ChangeEventHandler;
   onBlur: ChangeEventHandler;
-  label: string;
+  label?: string;
   inputProps: HTMLProps<HTMLInputElement>;
   errors?: any;
 }
@@ -16,12 +16,15 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const { name, label, inputProps, errors, onBlur, onChange } = props;
     return (
       <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor={name}
-        >
-          {label}
-        </label>
+        {label && (
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor={name}
+          >
+            {label}
+          </label>
+        )}
+
         <input
           ref={ref}
           type="text"

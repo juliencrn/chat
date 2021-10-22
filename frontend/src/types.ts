@@ -34,3 +34,9 @@ export type RichUserConnection = User & Partial<UserConnection>;
 export interface AccessToken {
   accessToken: string;
 }
+
+export interface ServerError {
+  statusCode: number;
+  message: string;
+  error: string;
+}
