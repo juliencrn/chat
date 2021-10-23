@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 import { modalSelector } from "../state/slices/modalSlice";
 import Modal from "./Modal/Modal";
+import Toaster from "./Toaster";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ function Layout({ children, center, card, pageTitle }: LayoutProps) {
   const Children = (
     <>
       {!!modal.type && <Modal {...modal} />}
+      <Toaster />
       {children}
     </>
   );
@@ -27,7 +29,7 @@ function Layout({ children, center, card, pageTitle }: LayoutProps) {
       {card ? <Card title={pageTitle}>{Children}</Card> : Children}
     </Center>
   ) : (
-    Children
+    <div className="fixed top-0 left-0 h-full w-full flex">{Children}</div>
   );
 }
 

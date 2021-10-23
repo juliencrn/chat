@@ -9,6 +9,7 @@ import {
   refreshConnections,
   setAllMessages,
 } from "../../state/slices/chatSlice";
+import { addToast } from "../../state/slices/toasterSlice";
 import { Message, ThreadState, User, UserConnection } from "../../types";
 import ChatForm from "./ChatForm";
 import ChatHeader from "./ChatHeader";
@@ -55,6 +56,12 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
     socket.on("disconnect", () => console.log("Disconnected"));
 
     // Business events
+    socket.on("user", (newUser: User) => {
+      if (newUser.id !== currentUser.id) {
+        addToast(dispatch, `${newUser.username} just joined the chat!`);
+      }
+    });
+
     socket.on("users", (conns: UserConnection[]) => {
       dispatch(refreshConnections(conns));
     });

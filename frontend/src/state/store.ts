@@ -20,11 +20,13 @@ import { usersApi } from "./api/usersApi";
 import authReducer from "./slices/authSlice";
 import chatReducer from "./slices/chatSlice";
 import modalReducer from "./slices/modalSlice";
+import toasterReducer from "./slices/toasterSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
   modal: modalReducer,
+  toaster: toasterReducer,
   [authApi.reducerPath]: authApi.reducer,
   [messagesApi.reducerPath]: messagesApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
