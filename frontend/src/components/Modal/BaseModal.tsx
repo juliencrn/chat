@@ -26,7 +26,7 @@ function BaseModal({ title, content, footer }: BaseModalProps) {
       role="dialog"
       aria-modal="true"
     >
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
         {/*
           Background overlay, show/hide based on modal state.
 
@@ -62,7 +62,7 @@ function BaseModal({ title, content, footer }: BaseModalProps) {
         */}
         <div
           ref={modalContentRef}
-          className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          className="relative inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full"
         >
           <button
             onClick={handleClose}
