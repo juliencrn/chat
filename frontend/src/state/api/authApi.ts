@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
-import { AccessToken } from "../types";
-import getBaseQuery from "./getBaseQuery";
+import { AccessToken } from "../../types";
+import getBaseQuery from "../getBaseQuery";
 
 export interface LoginDto {
   username: string;

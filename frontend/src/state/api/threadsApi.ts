@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
-import { Thread } from "../types";
-import getBaseQuery from "./getBaseQuery";
+import { Thread } from "../../types";
+import getBaseQuery from "../getBaseQuery";
 
 export const threadsApi = createApi({
   reducerPath: "threadsApi",
@@ -22,6 +22,13 @@ export const threadsApi = createApi({
         body,
       }),
     }),
+
+    deleteThread: builder.mutation<Thread, string>({
+      query: threadId => ({
+        url: `/${threadId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -29,4 +36,5 @@ export const {
   useGetAllThreadsQuery,
   useGetOneThreadQuery,
   useCreateThreadMutation,
+  useDeleteThreadMutation,
 } = threadsApi;

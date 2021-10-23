@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { AccessToken, User } from "../types";
-import { RootState } from "./store";
+import { AccessToken, User } from "../../types";
+import { RootState } from "../store";
 
 export interface AuthState extends AccessToken {
   accessToken: string;

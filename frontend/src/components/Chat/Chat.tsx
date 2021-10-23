@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Socket } from "socket.io-client";
 
+import { useGetMessagesByThreadQuery } from "../../state/api/messagesApi";
 import {
   addMessage,
   refreshConnections,
   setAllMessages,
-} from "../../state/chatSlice";
-import { useGetMessagesByThreadQuery } from "../../state/messagesApi";
+} from "../../state/slices/chatSlice";
 import { Message, ThreadState, User, UserConnection } from "../../types";
 import ChatForm from "./ChatForm";
 import ChatHeader from "./ChatHeader";

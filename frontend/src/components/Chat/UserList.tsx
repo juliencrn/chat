@@ -3,7 +3,7 @@ import React from "react";
 import cn from "classnames";
 
 import useConnectedUserList from "../../hooks/useConnectedUserList";
-import { useProfileQuery } from "../../state/usersApi";
+import { useProfileQuery } from "../../state/api/usersApi";
 import { RichUserConnection } from "../../types";
 
 function UserList() {

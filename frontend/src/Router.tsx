@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login/Login";
 import NotFound from "./pages/NotFound";
 import Thread from "./pages/Thread";
-import { AuthState } from "./state/authSlice";
+import { AuthState } from "./state/slices/authSlice";
 
 export default function Router() {
   return (

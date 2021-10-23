@@ -6,8 +6,8 @@ import { useDispatch } from "react-redux";
 import * as yup from "yup";
 
 import TextInput from "../../components/TextInput";
-import { useLoginMutation } from "../../state/authApi";
-import { logout, setToken } from "../../state/authSlice";
+import { useLoginMutation } from "../../state/api/authApi";
+import { logout, setToken } from "../../state/slices/authSlice";
 
 export interface LoginFormValue {
   username: string;

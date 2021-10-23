@@ -1,31 +1,29 @@
 import React from "react";
 
 import cn from "classnames";
+import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
-import { useGetAllThreadsQuery } from "../../state/threadsApi";
+import useThreadList from "../../hooks/useThreadList";
+import { showCreateThreadModal } from "../../state/slices/modalSlice";
 import { Thread } from "../../types";
-import { HashtagIcon } from "../Icons";
-import CreateThread from "./CreateThread";
+import { HashtagIcon, PlusIcon } from "../Icons";
 
 function ThreadList() {
   const { slug } = useParams<{ slug: string }>();
-  const threadsQuery = useGetAllThreadsQuery(undefined);
-
-  const { data: threads, isLoading, refetch } = threadsQuery;
+  const [threads, { isLoading }] = useThreadList(slug);
 
   return (
     <ul>
       {isLoading && <li>...</li>}
-      {threads &&
-        threads.map(thread => (
-          <ThreadLine
-            key={thread.id}
-            thread={thread}
-            active={thread.slug === slug}
-          />
-        ))}
-      <CreateThread onSuccess={refetch} />
+      {threads.map(thread => (
+        <ThreadLine
+          key={thread.id}
+          thread={thread}
+          active={thread.slug === slug}
+        />
+      ))}
+      <CreateThreadButton />
     </ul>
   );
 }
@@ -51,6 +49,31 @@ function ThreadLine({ thread, active }: ThreadLineProps) {
       >
         {thread.name}
       </Link>
+    </li>
+  );
+}
+
+function CreateThreadButton() {
+  const dispatch = useDispatch();
+
+  const handleOpenCreateThreadModal = () => {
+    dispatch(showCreateThreadModal());
+  };
+
+  return (
+    <li className={`mb-1 mt-2`}>
+      <button
+        onClick={handleOpenCreateThreadModal}
+        className={`flex items-center justify-start cursor-pointer`}
+        type="button"
+      >
+        <span className={cn(`w-4 bg-gray-700 text-gray-300 rounded`)}>
+          <PlusIcon />
+        </span>
+        <span className={cn("pl-2 link capitalize text-gray-500")}>
+          Add thread
+        </span>
+      </button>
     </li>
   );
 }

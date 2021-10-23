@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Router from "./Router";
-import { authSelector, logout, setUser } from "./state/authSlice";
-import { useProfileQuery } from "./state/usersApi";
+import { useProfileQuery } from "./state/api/usersApi";
+import { authSelector, logout, setUser } from "./state/slices/authSlice";
 
 function App() {
   useAutoFetchUserProfile();

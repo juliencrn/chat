@@ -40,3 +40,5 @@ export interface ServerError {
   message: string;
   error: string;
 }
+
+export type ThemeVariant = "primary" | "secondary" | "danger";

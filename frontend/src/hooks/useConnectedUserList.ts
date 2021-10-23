@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 
+import { useGetUsersQuery } from "../state/api/usersApi";
 import { RootState } from "../state/store";
-import { useGetUsersQuery } from "../state/usersApi";
 import { RichUserConnection, User } from "../types";
 
 type HookReturn = [RichUserConnection[], { isLoading: boolean }];

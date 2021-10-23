@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
 import Chat from "../components/Chat/Chat";
-import PageLoader from "../components/PageLoader";
+import Layout from "../components/Layout";
 import useSocket from "../hooks/useSocket";
 import { ProtectedRouteProps } from "../Router";
-import { chatSelector, initThread } from "../state/chatSlice";
-import { useGetOneThreadQuery } from "../state/threadsApi";
+import { useGetOneThreadQuery } from "../state/api/threadsApi";
+import { chatSelector, initThread } from "../state/slices/chatSlice";
 import NotFound from "./NotFound";
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT ?? "";
@@ -51,10 +51,18 @@ function Thread(props: ProtectedRouteProps) {
   const threadState = !!currentThread && chat.threads[currentThread.slug];
 
   if (isLoading || !currentThread || !socket || !threadState) {
-    return <PageLoader />;
+    return (
+      <Layout>
+        <h3>...</h3>
+      </Layout>
+    );
   }
 
-  return <Chat socket={socket} threadState={threadState} user={user} />;
+  return (
+    <Layout>
+      <Chat socket={socket} threadState={threadState} user={user} />
+    </Layout>
+  );
 }
 
 export default Thread;

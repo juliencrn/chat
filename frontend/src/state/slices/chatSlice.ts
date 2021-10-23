@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { Message, Thread, ThreadState, UserConnection } from "../types";
-import { fromMap, toMap } from "../utils";
-import { RootState } from "./store";
+import { Message, Thread, ThreadState, UserConnection } from "../../types";
+import { fromMap, toMap } from "../../utils";
+import { RootState } from "../store";
 
 interface ChatState {
   connections: UserConnection[];

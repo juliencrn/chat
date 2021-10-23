@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { authSelector, AuthState } from "../state/authSlice";
+import { authSelector, AuthState } from "../state/slices/authSlice";
 
 function useAuth(): null | AuthState {
   const auth = useSelector(authSelector);

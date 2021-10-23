@@ -13,16 +13,18 @@ import {
 import { PersistConfig } from "redux-persist/es/types";
 import storage from "redux-persist/lib/storage";
 
-import { authApi } from "./authApi";
-import authReducer from "./authSlice";
-import chatReducer from "./chatSlice";
-import { messagesApi } from "./messagesApi";
-import { threadsApi } from "./threadsApi";
-import { usersApi } from "./usersApi";
+import { authApi } from "./api/authApi";
+import { messagesApi } from "./api/messagesApi";
+import { threadsApi } from "./api/threadsApi";
+import { usersApi } from "./api/usersApi";
+import authReducer from "./slices/authSlice";
+import chatReducer from "./slices/chatSlice";
+import modalReducer from "./slices/modalSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
+  modal: modalReducer,
   [authApi.reducerPath]: authApi.reducer,
   [messagesApi.reducerPath]: messagesApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,

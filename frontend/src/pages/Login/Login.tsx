@@ -2,7 +2,7 @@ import React from "react";
 
 import { Redirect } from "react-router";
 
-import PublicLayout from "../../components/PublicLayout";
+import Layout from "../../components/Layout";
 import useAuth from "../../hooks/useAuth";
 import LoginForm from "./LoginForm";
 
@@ -14,9 +14,9 @@ function Login() {
   }
 
   return (
-    <PublicLayout title="Sign in">
+    <Layout center card pageTitle="Sign in">
       <LoginForm />
-    </PublicLayout>
+    </Layout>
   );
 }
 
