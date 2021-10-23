@@ -8,6 +8,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
+import to from "await-to-js";
 import { Server, Socket } from "socket.io";
 import { WebSocketJwtAuthGuard } from "src/auth/guards/websocket-jwt-auth.guard";
 import { MessagesService } from "src/messages/messages.service";
@@ -54,6 +55,14 @@ export class ChatGateway
 
     this.logger.log(`Client connected (${JSON.stringify(userConnection)})`);
     this.server.emit("users", this.userConnections);
+
+    const [err, user] = await to(
+      this.usersService.findById(userConnection.userId),
+    );
+
+    if (!err && user) {
+      this.server.emit("user", this.usersService.serialize(user));
+    }
   }
 
   async handleDisconnect(client: Socket) {
