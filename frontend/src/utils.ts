@@ -15,3 +15,11 @@ export const toMap = <T extends Model>(array: T[]): Map<string, T> => {
 export const fromMap = <T extends Model>(map: Map<string, T>): T[] => {
   return Array.from(map.entries()).map(entry => entry[1]);
 };
+
+export const toQueryParams = (params: Record<string, any>): string => {
+  const paramsAsString = Object.entries(params)
+    .filter(([_, value]) => !!value)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `?${paramsAsString}`;
+};

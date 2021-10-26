@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Message, Thread, ThreadState, UserConnection } from "../../types";
-import { fromMap, toMap } from "../../utils";
+import { fromMap, sortByTime, toMap } from "../../utils";
 import { RootState } from "../store";
 
 interface ChatState {
@@ -33,23 +33,34 @@ export const chatSlice = createSlice({
 
       map.set(message.id, message);
 
-      state.threads[threadSlug].messages = fromMap(map);
+      state.threads[threadSlug].messages = sortByTime(fromMap(map));
+      state.threads[threadSlug].lastAddingMethod = "new_message";
     },
 
     setAllMessages: (state, action: PayloadAction<MessagesDto>) => {
       const { threadSlug, messages } = action.payload;
-      if (!state.threads[threadSlug]) {
+
+      let initialMessagesLength = 0;
+
+      if (state.threads[threadSlug]) {
+        initialMessagesLength = state.threads[threadSlug].messages.length;
+      } else {
         state.threads[threadSlug] = initialThread(messages[0].thread);
       }
 
-      const map = toMap(state.threads[threadSlug].messages);
+      if (messages.length === 0) {
+        state.threads[threadSlug].lastAddingMethod = "last_fetch";
+      } else {
+        const map = toMap(state.threads[threadSlug].messages);
 
-      for (const message of messages) {
-        map.set(message.id, message);
+        for (const message of messages) {
+          map.set(message.id, message);
+        }
+
+        state.threads[threadSlug].messages = sortByTime(fromMap(map));
+        state.threads[threadSlug].lastAddingMethod =
+          initialMessagesLength > 0 ? "api_refetch" : "initial_fetch";
       }
-
-      state.threads[threadSlug].messages = fromMap(map);
-      state.threads[threadSlug].fetched = true;
     },
 
     refreshConnections: (state, action: PayloadAction<UserConnection[]>) => {
@@ -77,5 +88,5 @@ interface MessagesDto {
 const initialThread = (thread: Thread): ThreadState => ({
   ...thread,
   messages: [],
-  fetched: false,
+  lastAddingMethod: "idle",
 });

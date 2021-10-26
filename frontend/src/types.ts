@@ -14,8 +14,13 @@ export interface Thread extends Model {
 }
 
 export interface ThreadState extends Thread {
-  fetched: boolean;
   messages: Message[];
+  lastAddingMethod:
+    | "new_message"
+    | "api_refetch"
+    | "idle"
+    | "initial_fetch"
+    | "last_fetch";
 }
 
 export interface Message extends Model {

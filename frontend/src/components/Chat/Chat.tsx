@@ -3,12 +3,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Socket } from "socket.io-client";
 
-import { useGetMessagesByThreadQuery } from "../../state/api/messagesApi";
-import {
-  addMessage,
-  refreshConnections,
-  setAllMessages,
-} from "../../state/slices/chatSlice";
+import { addMessage, refreshConnections } from "../../state/slices/chatSlice";
 import { addToast } from "../../state/slices/toasterSlice";
 import { Message, ThreadState, User, UserConnection } from "../../types";
 import ChatForm from "./ChatForm";
@@ -29,26 +24,13 @@ interface CreateSocketMessageDto {
 }
 
 function Chat({ user: currentUser, socket, threadState }: ChatProps) {
-  const threadId = threadState.id;
-  const threadSlug = threadState.slug;
   const dispatch = useDispatch();
-  const messagesQuery = useGetMessagesByThreadQuery(threadId);
-  const { isSuccess, data: initialMessages } = messagesQuery;
 
   // Ask fresh user list on load
   useEffect(() => {
     socket.emit("users");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Load initial messages
-  useEffect(() => {
-    if (initialMessages && !threadState.fetched && isSuccess) {
-      const messages = messagesQuery.data as Message[];
-      dispatch(setAllMessages({ messages, threadSlug }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialMessages, isSuccess, threadSlug]);
 
   useEffect(() => {
     // Generals events
@@ -76,7 +58,7 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
   const handleMessage = (text: string) => {
     const messageRequest: CreateSocketMessageDto = {
       userId: currentUser.id,
-      threadId,
+      threadId: threadState.id,
       text,
     };
     socket.emit("message", messageRequest);
@@ -87,7 +69,7 @@ function Chat({ user: currentUser, socket, threadState }: ChatProps) {
       <ChatSidebar />
       <div className="flex-1 flex flex-col relative pb-16">
         <ChatHeader user={currentUser} thread={threadState} />
-        <ChatMessageList messages={threadState.messages} />
+        <ChatMessageList thread={threadState} />
         <ChatForm onMessage={handleMessage} />
       </div>
     </div>
