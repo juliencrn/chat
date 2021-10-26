@@ -43,34 +43,33 @@ export class MessagesService {
     return withUserAndThread;
   }
 
-  async findAll(): Promise<MessageDocument[]> {
-    const messages = await this.messageModel
-      .find()
-      .populate("user")
-      .populate("thread")
-      .exec();
+  async findAllByThread(args: {
+    lastId?: string;
+    threadId?: string;
+    limit: number;
+  }): Promise<MessageDocument[]> {
+    // Pagination by ObjectId
+    const findOptions = args.lastId
+      ? { _id: { $lt: new mongo.ObjectId(args.lastId) } }
+      : undefined;
 
-    if (!messages) {
-      return [];
+    const query = this.messageModel
+      .find(findOptions)
+      .sort({ _id: -1 })
+      .limit(args.limit);
+
+    if (args.threadId) {
+      query.where("thread").in([new mongo.ObjectId(args.threadId)]);
     }
 
-    return messages;
-  }
-
-  async findAllByThread(threadIds: string[]): Promise<MessageDocument[]> {
     const [error, messages] = await to(
-      this.messageModel
-        .find()
-        .where("thread")
-        .in(threadIds.map(id => new mongo.ObjectId(id)))
-        .populate("user")
-        .populate("thread")
-        .exec(),
+      query.populate("user").populate("thread").exec(),
     );
 
     if (error || !messages) {
       return [];
     }
+
     return messages;
   }
 

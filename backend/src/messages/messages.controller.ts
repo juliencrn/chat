@@ -32,14 +32,16 @@ export class MessagesController {
   }
 
   @Get()
-  findAll(@Body() body: { threadIds?: string[] }, @Req() req: Request) {
-    let threadIds = req.query.threadIds as string | string[];
-    if (threadIds) {
-      threadIds = Array.isArray(threadIds) ? threadIds : [threadIds];
-      return this.messagesService.findAllByThread(threadIds);
-    }
+  findAllBy(@Req() req: Request) {
+    const lastId = (req.query?.lastId as string) || undefined;
+    const limit = Number(req.query?.limit) || 10;
+    const threadId = (req.query.threadId as string) || undefined;
 
-    return this.messagesService.findAll();
+    return this.messagesService.findAllByThread({
+      lastId,
+      threadId,
+      limit,
+    });
   }
 
   @Get(":id")
